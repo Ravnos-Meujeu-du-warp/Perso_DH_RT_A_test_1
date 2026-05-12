@@ -1,0 +1,3210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Heresy — Fiche de Personnage</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap');
+
+  :root {
+    --parchment: #e8d5a3;
+    --parchment2: #d9c28a;
+    --parchment3: #c8aa6a;
+    --ink: #0e0600;
+    --ink2: #2a1408;
+    --gold: #6a4a10;
+    --gold2: #8a6820;
+    --rust: #7a2510;
+    --dark-bg: #0f0a04;
+    --border: #6a4a18;
+    --border2: #4a3010;
+    --section-bg: rgba(100,70,20,0.12);
+    --check-active: #8a2010;
+    --input-bg: rgba(225,200,140,0.65);
+    --label-color: #2a1408;
+    --sublabel-color: #4a3010;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1005;
+    font-family: 'IM Fell English', 'Georgia', serif;
+    color: var(--ink);
+    padding: 10px;
+  }
+
+  .page {
+    background: var(--parchment);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    border: 3px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+    max-width: 960px;
+    margin: 0 auto 20px;
+    position: relative;
+    box-shadow: inset 0 0 40px rgba(100,60,0,0.15);
+  }
+
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .page-title {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink2);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--ink2);
+    border-bottom: 1.5px solid var(--border);
+    margin-bottom: 5px;
+    padding-bottom: 2px;
+    text-align: center;
+  }
+
+  /* ---- HEADER ---- */
+  .header-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 5px 10px;
+    margin-bottom: 8px;
+  }
+  .hf-full  { grid-column: 1 / -1; }
+  .hf-2     { grid-column: span 2; }
+  .hf-3     { grid-column: span 3; }
+  .field-group { display: flex; flex-direction: column; gap: 1px; }
+  .field-group label {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+  }
+  .field-group input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 2px 3px;
+    font-family: 'IM Fell English', serif;
+    font-size: 13px;
+    color: var(--ink);
+    width: 100%;
+    outline: none;
+  }
+  .field-group input:focus { border-bottom-color: var(--gold2); }
+
+  /* ---- CARACTÉRISTIQUES ---- */
+  .chars-wrap {
+    background: var(--section-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+
+  .chars-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 4px;
+  }
+
+  .char-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .char-label {
+    font-family: 'Cinzel', serif;
+    font-size: 7.5px;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--ink2);
+    line-height: 1.2;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  .char-value-box {
+    width: 52px;
+    height: 52px;
+    border: 2.5px solid var(--border);
+    background: var(--input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .char-value-box input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    outline: none;
+  }
+
+  .char-amelio-row {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 60px;
+  }
+
+  .amelio-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--parchment2);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    padding: 0;
+    display: block;
+  }
+  .amelio-btn:hover { border-color: var(--gold2); background: var(--parchment3); }
+  .amelio-btn.filled { background: var(--rust); border-color: var(--rust); }
+
+  /* ---- MAIN TWO-COLUMN ---- */
+  .main-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .panel {
+    background: var(--section-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 7px;
+  }
+
+  /* ---- SKILL TABLE ---- */
+  .skill-hdr {
+    display: grid;
+    grid-template-columns: 1fr 26px 26px 26px 26px 26px 24px 34px;
+    gap: 0px;
+    align-items: center;
+    margin-bottom: 4px;
+    background: rgba(80,45,5,0.20);
+    border-radius: 2px;
+    padding: 3px 2px;
+    border: 1px solid var(--border2);
+  }
+  .skill-hdr span {
+    font-family: 'Cinzel', serif;
+    font-size: 6.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-align: center;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+  .skill-hdr span:first-child { text-align: left; font-size: 7px; }
+
+  .skill-row {
+    display: grid;
+    grid-template-columns: 1fr 26px 26px 26px 26px 26px 24px 34px;
+    gap: 0px;
+    align-items: center;
+    margin-bottom: 1px;
+    min-height: 18px;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+  .skill-row:nth-child(even) {
+    background: rgba(80,45,5,0.07);
+  }
+
+  .skill-name-cell {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--ink);
+    overflow: hidden;
+  }
+  .skill-name-cell select, .skill-name-cell input {
+    font-family: 'IM Fell English', serif;
+    font-size: 10px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    width: 100%;
+    outline: none;
+    cursor: pointer;
+  }
+  .skill-name-cell input { border-bottom: 1px solid var(--border2); cursor: text; }
+
+  .char-mini-sel {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    font-weight: 600;
+    border: none;
+    background: rgba(80,45,5,0.12);
+    color: var(--ink2);
+    outline: none;
+    cursor: pointer;
+    width: 28px;
+    text-align: center;
+    border-radius: 2px;
+  }
+
+  .skill-cb-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 18px;
+  }
+  .skill-cb-cell input[type=checkbox] {
+    width: 11px;
+    height: 11px;
+    accent-color: var(--rust);
+    cursor: pointer;
+  }
+  .skill-cb-cell input[type=checkbox]:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  .skill-bonus-inp {
+    width: 24px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: rgba(200,168,80,0.15);
+    color: var(--ink);
+    text-align: center;
+    outline: none;
+    padding: 1px 0;
+    -moz-appearance: textfield;
+  }
+  .skill-bonus-inp::-webkit-outer-spin-button,
+  .skill-bonus-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .skill-total-cell {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    background: rgba(140,100,20,0.25);
+    border: 1.5px solid var(--border);
+    color: var(--ink);
+    padding: 1px 0;
+    min-height: 16px;
+  }
+
+  /* ---- RIGHT PANEL: multi-skills ---- */
+  .multi-skill-block { margin-bottom: 6px; }
+  .multi-skill-label {
+    font-family: 'Cinzel', serif;
+    font-size: 8.5px;
+    color: var(--ink2);
+    font-style: italic;
+    margin-bottom: 2px;
+  }
+
+  /* ---- SIDE BOXES ---- */
+  .side-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .text-lines-box { display: flex; flex-direction: column; gap: 4px; }
+  .text-line {
+    border-bottom: 1px solid var(--border2);
+    height: 19px;
+  }
+  .text-line input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'IM Fell English', serif;
+    font-size: 11px;
+    color: var(--ink);
+    outline: none;
+    padding: 1px 2px;
+  }
+
+  /* ---- BOTTOM SECTION ---- */
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  /* ---- TECH TABLE ---- */
+  .tech-tbl { width: 100%; border-collapse: collapse; font-size: 9px; }
+  .tech-tbl th {
+    font-family: 'Cinzel', serif;
+    font-size: 7.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gold);
+    border-bottom: 1px solid var(--border);
+    padding: 2px 3px;
+    text-align: left;
+  }
+  .tech-tbl td { padding: 2px 3px; border-bottom: 1px solid rgba(120,88,32,0.2); }
+  .tech-tbl td input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'IM Fell English', serif;
+    font-size: 9.5px;
+    color: var(--ink);
+    outline: none;
+  }
+
+  /* ---- XP & INFLUENCE ---- */
+  .xp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .big-num-input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: center;
+    padding: 4px;
+    outline: none;
+    margin-top: 4px;
+  }
+
+  /* ---- PAGE 2 SPECIFICS ---- */
+  .move-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .move-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .move-cell label {
+    font-family: 'Cinzel', serif;
+    font-size: 7.5px;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--ink2);
+    line-height: 1.2;
+    min-height: 22px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .move-val {
+    width: 100%;
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    color: var(--ink);
+    padding: 4px 0;
+  }
+  .move-formula {
+    font-size: 8px;
+    color: var(--gold);
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* Weapon block */
+  .weapon-block {
+    background: var(--section-bg);
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    padding: 5px;
+    margin-bottom: 5px;
+  }
+  .weapon-grid {
+    display: grid;
+    grid-template-columns: 1fr 60px 40px 30px 30px;
+    gap: 3px;
+    margin-bottom: 3px;
+  }
+  .weapon-row2 {
+    display: grid;
+    grid-template-columns: 40px 70px 40px 40px;
+    gap: 3px;
+    margin-bottom: 3px;
+  }
+  .wlabel {
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 1px;
+  }
+  .winput {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--border2);
+    background: transparent;
+    font-family: 'IM Fell English', serif;
+    font-size: 10px;
+    color: var(--ink);
+    outline: none;
+    padding: 1px 2px;
+  }
+
+  /* Body diagram */
+  .body-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .body-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+  .body-part {
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 3px 5px;
+    text-align: center;
+    min-width: 65px;
+  }
+  .body-part label {
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .body-part input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--ink);
+    outline: none;
+  }
+
+  /* Points pools */
+  .points-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+  .points-block { background: var(--section-bg); border: 1px solid var(--border); border-radius: 3px; padding: 6px; }
+  .points-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 4px; }
+  .psub-field label { font-size: 7.5px; font-family: 'Cinzel', serif; color: var(--gold); display: block; }
+  .psub-field input { width: 100%; border: none; border-bottom: 1px solid var(--border2); background: transparent; font-family: 'IM Fell English', serif; font-size: 12px; color: var(--ink); outline: none; }
+
+  /* ---- WEIGHT INPUT ---- */
+  .weight-inp {
+    width: 36px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    background: var(--input-bg);
+    color: var(--ink);
+    text-align: center;
+    outline: none;
+    padding: 1px 2px;
+    flex-shrink: 0;
+    -moz-appearance: textfield;
+  }
+  .weight-inp::-webkit-outer-spin-button,
+  .weight-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .weight-lbl {
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    font-weight: 700;
+    color: var(--sublabel-color);
+    text-align: center;
+    display: block;
+    margin-bottom: 1px;
+  }
+
+  /* ---- IMPLANTS ---- */
+  .implant-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .implant-slot {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--input-bg);
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    padding: 3px 5px;
+  }
+  .implant-slot input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'IM Fell English', serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink);
+    outline: none;
+  }
+
+  /* Separateur ornement */
+  .ornament {
+    text-align: center;
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 4px;
+    margin: 2px 0;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 8px;
+    color: var(--sublabel-color);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* ========== IMPRESSION A4 ========== */
+  @media print {
+    @page { size: A4 portrait; margin: 6mm; }
+    html, body { background: white !important; padding: 0 !important; margin: 0 !important;
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .page { width: 198mm !important; max-width: 198mm !important; min-height: 279mm !important;
+      margin: 0 !important; padding: 6mm !important; border: 2px solid var(--border) !important;
+      border-radius: 0 !important; box-shadow: none !important;
+      page-break-after: always !important; break-after: page !important;
+      background-color: #e8d5a3 !important; }
+    .page:last-child { page-break-after: avoid !important; break-after: avoid !important; }
+    .panel, .chars-wrap, .weapon-block, .points-block, .body-part { page-break-inside: avoid !important; }
+    .panel { background-color: rgba(232,213,163,0.6) !important; }
+    .chars-wrap { background-color: rgba(100,70,20,0.10) !important; }
+    .skill-hdr { background-color: rgba(80,45,5,0.20) !important; }
+    .skill-row:nth-child(even) { background-color: rgba(80,45,5,0.07) !important; }
+    .skill-total-cell { background-color: rgba(140,100,20,0.25) !important; }
+    .weapon-block { background-color: rgba(210,185,130,0.5) !important; }
+    .points-block { background-color: rgba(232,213,163,0.6) !important; }
+    .body-part { background-color: rgba(220,195,130,0.55) !important; }
+    .amelio-btn.filled { background-color: #7a2510 !important; }
+    /* Masquer la barre de sauvegarde */
+    #save-bar { display: none !important; }
+    /* Masquer les flèches de menus déroulants */
+    select { -webkit-appearance: none !important; -moz-appearance: none !important;
+      appearance: none !important; background-image: none !important; padding-right: 0 !important; }
+    /* Tailles réduites */
+    .page-title   { font-size: 20px !important; margin-bottom: 6px !important; }
+    .section-title { font-size: 9px !important; padding: 2px 3px !important; margin-bottom: 4px !important; }
+    .chars-wrap   { padding: 5px !important; margin-bottom: 6px !important; }
+    .char-label   { font-size: 6.5px !important; min-height: 18px !important; }
+    .char-value-box { width: 44px !important; height: 44px !important; }
+    .char-value-box input { font-size: 17px !important; }
+    .amelio-btn   { width: 10px !important; height: 10px !important; }
+    .panel        { padding: 5px !important; }
+    .skill-hdr    { padding: 2px !important; margin-bottom: 3px !important; }
+    .skill-row    { min-height: 15px !important; }
+    .skill-name-cell { font-size: 9px !important; }
+    .text-line    { height: 16px !important; }
+    .text-line input { font-size: 10px !important; }
+    .field-group label { font-size: 7px !important; }
+    .field-group input { font-size: 11px !important; }
+    .big-num-input { font-size: 14px !important; padding: 2px !important; }
+    .move-cell label { font-size: 6.5px !important; min-height: 16px !important; }
+    .move-val     { font-size: 13px !important; padding: 2px 0 !important; }
+    .winput       { font-size: 9px !important; }
+    .wlabel       { font-size: 6.5px !important; }
+    .footer-note  { font-size: 7px !important; margin-top: 4px !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- =========== PAGE 1 =========== -->
+<div class="page" id="page1">
+  <div class="page-title">⸻ Dark Heresy ⸻</div>
+
+  <!-- HEADER -->
+  <div class="header-fields">
+    <!-- Ligne 1 : Nom personnage | Nom joueur — 2 colonnes égales chacun -->
+    <div class="field-group hf-2"><label>Nom du personnage</label><input type="text" id="nom"></div>
+    <div class="field-group hf-2"><label>Nom du joueur</label><input type="text" id="joueur"></div>
+
+    <!-- Ligne 2 : Monde natal | Historique | Particularité — 3 colonnes égales -->
+    <div class="field-group"><label>Monde natal</label><input type="text" id="monde"></div>
+    <div class="field-group"><label>Historique</label><input type="text" id="historique"></div>
+    <div class="field-group hf-2"><label>Particularité</label><input type="text" id="particularite"></div>
+
+    <!-- Ligne 3 : Motivation | Plan de carrière | Carrière exaltée | Promotion -->
+    <div class="field-group"><label>Motivation</label><input type="text" id="motiv"></div>
+    <div class="field-group"><label>Plan de carrière</label><input type="text" id="carriere"></div>
+    <div class="field-group"><label>Carrière exaltée</label><input type="text" id="carriere-exaltee"></div>
+    <div class="field-group"><label>Promotion</label><input type="text" id="promo" style="max-width:55px;"></div>
+
+    <!-- Ligne 4 : Divination (pleine largeur) -->
+    <div class="field-group hf-full"><label>Divination</label><input type="text" id="divination"></div>
+  </div>
+
+  <!-- CARACTÉRISTIQUES -->
+  <div class="chars-wrap">
+    <div class="section-title">— Caractéristiques —</div>
+    <div class="chars-grid" id="chars-grid"></div>
+  </div>
+
+  <!-- MAIN 2 COLS: skills left, skills-right -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0;">
+    <div class="panel" id="panel-left" style="border-bottom:none;border-bottom-left-radius:0;border-bottom-right-radius:0;">
+      <div class="section-title">Compétences</div>
+    </div>
+    <div class="panel" id="panel-right" style="border-bottom:none;border-bottom-left-radius:0;border-bottom-right-radius:0;">
+      <div class="section-title">Compétences (suite)</div>
+    </div>
+  </div>
+
+  <!-- Compétences de maître | Talents -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0;">
+    <div class="panel" id="panel-maitrise" style="border-top:1px dashed var(--border2);border-bottom:none;border-radius:0;">
+      <div class="section-title">Compétences de maître</div>
+    </div>
+    <div class="panel" style="border-top:1px dashed var(--border2);border-bottom:none;border-radius:0;">
+      <div class="section-title">Talents</div>
+      <div class="text-lines-box" id="talents-box"></div>
+    </div>
+  </div>
+
+  <!-- Traits | Maîtrises d'armes + Exotique -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0;">
+    <div class="panel" style="border-top:1px dashed var(--border2);border-bottom:none;border-radius:0;">
+      <div class="section-title">Traits</div>
+      <div class="text-lines-box" id="traits-box"></div>
+    </div>
+    <div class="panel" style="border-top:1px dashed var(--border2);border-bottom:none;border-radius:0;">
+      <div class="section-title" style="font-size:9px;margin-bottom:4px;">Formation aux armes à distance</div>
+      <table id="mastery-ranged" style="width:100%;border-collapse:collapse;font-family:'Cinzel',serif;font-size:8px;margin-bottom:8px;"></table>
+      <div class="section-title" style="font-size:9px;margin-bottom:4px;">Formation armes de mêlée / jet</div>
+      <table id="mastery-melee" style="width:100%;border-collapse:collapse;font-family:'Cinzel',serif;font-size:8px;margin-bottom:8px;"></table>
+      <div class="section-title" style="font-size:9px;margin-bottom:4px;">Exotique</div>
+      <div class="text-lines-box" id="exotique-box"></div>
+    </div>
+  </div>
+
+  <!-- Capacités spéciales | Talents de virtuose -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;margin-top:0;">
+    <div class="panel" style="border-top:1px dashed var(--border2);border-top-left-radius:0;border-top-right-radius:0;">
+      <div class="section-title">Capacités spéciales</div>
+      <div class="text-lines-box" id="capa-box"></div>
+    </div>
+    <div class="panel" style="border-top:1px dashed var(--border2);border-top-left-radius:0;border-top-right-radius:0;">
+      <div class="section-title">Talents de virtuose</div>
+      <div class="text-lines-box" id="virtuose-box"></div>
+    </div>
+  </div>
+
+  <!-- XP + INFLUENCE + DESTIN -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+    <div class="panel">
+      <div class="section-title">Points d'expérience</div>
+      <div class="field-group" style="margin-top:6px;"><label>XP à dépenser</label><input class="big-num-input" type="number" id="xp-avail"></div>
+      <div class="field-group" style="margin-top:6px;"><label>XP dépensés</label><input class="big-num-input" type="number" id="xp-spent"></div>
+    </div>
+    <div class="panel">
+      <div class="section-title">Facteur d'influence</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;">
+        <div class="field-group"><label>De départ</label><input type="text"></div>
+        <div class="field-group"><label>Actuel</label><input type="text"></div>
+        <div class="field-group"><label>Infortunes</label><input type="text"></div>
+        <div class="text-line"><input type="text"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="section-title">Points de Destin</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <div class="field-group"><label>Total</label><input class="big-num-input" type="text"></div>
+        <div class="field-group"><label>Actuels</label><input class="big-num-input" type="text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRE DE SAUVEGARDE -->
+  <div id="save-bar" style="display:flex;align-items:center;gap:8px;background:rgba(80,45,5,0.12);border:1.5px solid var(--border);border-radius:3px;padding:6px 10px;margin-bottom:8px;flex-wrap:wrap;">
+    <span style="font-family:'Cinzel',serif;font-size:9px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:1px;flex-shrink:0;">Sauvegarde</span>
+    <button onclick="exportCharacter()" style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;background:rgba(50,100,50,0.15);border:1.5px solid #3a6a3a;color:#2a4a2a;padding:4px 10px;border-radius:2px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;flex-shrink:0;">💾 Exporter (.json)</button>
+    <label style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;background:rgba(50,70,120,0.15);border:1.5px solid #3a4a8a;color:#2a3a6a;padding:4px 10px;border-radius:2px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;flex-shrink:0;">
+      📂 Importer
+      <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importCharacter(event)">
+    </label>
+    <span id="save-status" style="font-family:'IM Fell English',serif;font-size:10px;font-style:italic;color:var(--sublabel-color);margin-left:4px;"></span>
+  </div>
+
+  <div class="footer-note">Photocopie autorisée pour un usage strictement privé. © Games Workshop Ltd 2010.</div>
+</div>
+<div class="page" id="page2">
+  <div class="page-title">⸻ Dark Heresy ⸻</div>
+
+  <!-- CARACTÉRISTIQUES (repeat) -->
+  <div class="chars-wrap">
+    <div class="section-title">— Caractéristiques —</div>
+    <div class="chars-grid" id="chars-grid2"></div>
+  </div>
+
+  <!-- MOUVEMENT -->
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="section-title">Mouvement</div>
+    <div class="move-grid" id="move-grid"></div>
+  </div>
+
+  <!-- ARMES + ÉQUIPEMENT + ARMURE -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+    <div>
+      <div class="panel">
+        <div class="section-title">Armes</div>
+        <div id="weapons-container"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="panel">
+        <div class="section-title">Équipement</div>
+        <div class="text-lines-box" id="equip-box"></div>
+      </div>
+      <div class="panel">
+        <div class="section-title">Acquisitions</div>
+        <div class="text-lines-box" id="acqui-box"></div>
+      </div>
+      <div class="panel">
+        <div class="section-title">Mutations</div>
+        <div class="text-lines-box" id="mutat-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POINTS POOLS -->
+  <div class="points-grid">
+    <div class="points-block">
+      <div class="section-title">Points de Blessures</div>
+      <div class="points-sub">
+        <div class="psub-field"><label>Total</label><input type="text"></div>
+        <div class="psub-field"><label>Actuels</label><input type="text"></div>
+        <div class="psub-field"><label>Dégâts critiques</label><input type="text"></div>
+        <div class="psub-field"><label>Fatigue</label><input type="text"></div>
+      </div>
+    </div>
+    <div class="points-block">
+      <div class="section-title">Points de Folie</div>
+      <div class="points-sub">
+        <div class="psub-field"><label>Actuels</label><input type="text"></div>
+        <div class="psub-field"><label>Degré</label><input type="text"></div>
+        <div class="psub-field" style="grid-column:1/3;"><label>Troubles mentaux</label><input type="text"></div>
+      </div>
+    </div>
+    <div class="points-block">
+      <div class="section-title">Points de Corruption</div>
+      <div class="points-sub">
+        <div class="psub-field"><label>Actuels</label><input type="text"></div>
+        <div class="psub-field"><label>Degré</label><input type="text"></div>
+        <div class="psub-field" style="grid-column:1/3;"><label>Malignités</label><input type="text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARMURE + DESTIN + CHARGE -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+    <div class="panel">
+      <div class="section-title">Points d'Armure</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:6px;">
+        <div class="body-diagram">
+          <div class="body-row">
+            <div class="body-part">
+              <label>Tête (1-10)</label>
+              <input type="text">
+              <div style="font-size:8px;color:var(--gold);margin-top:2px;">TYPE:</div>
+              <input type="text" style="width:100%;border:none;border-bottom:1px solid var(--border2);background:transparent;font-size:9px;color:var(--ink);outline:none;">
+            </div>
+          </div>
+          <div class="body-row">
+            <div class="body-part">
+              <label>Bras droit (11-20)</label>
+              <input type="text">
+              <div style="font-size:8px;color:var(--gold);margin-top:2px;">TYPE:</div>
+              <input type="text" style="width:100%;border:none;border-bottom:1px solid var(--border2);background:transparent;font-size:9px;color:var(--ink);outline:none;">
+            </div>
+            <div class="body-part">
+              <label>Bras gauche (21-30)</label>
+              <input type="text">
+              <div style="font-size:8px;color:var(--gold);margin-top:2px;">TYPE:</div>
+              <input type="text" style="width:100%;border:none;border-bottom:1px solid var(--border2);background:transparent;font-size:9px;color:var(--ink);outline:none;">
+            </div>
+          </div>
+          <div class="body-row">
+            <div class="body-part" style="min-width:140px;">
+              <label>Corps (31-70)</label>
+              <input type="text">
+              <div style="font-size:8px;color:var(--gold);margin-top:2px;">TYPE:</div>
+              <input type="text" style="width:100%;border:none;border-bottom:1px solid var(--border2);background:transparent;font-size:9px;color:var(--ink);outline:none;">
+            </div>
+          </div>
+          <div class="body-row">
+            <div class="body-part">
+              <label>Jambe droite (71-85)</label>
+              <input type="text">
+              <div style="font-size:8px;color:var(--gold);margin-top:2px;">TYPE:</div>
+              <input type="text" style="width:100%;border:none;border-bottom:1px solid var(--border2);background:transparent;font-size:9px;color:var(--ink);outline:none;">
+            </div>
+            <div class="body-part">
+              <label>Jambe gauche (86-100)</label>
+              <input type="text">
+              <div style="font-size:8px;color:var(--gold);margin-top:2px;">TYPE:</div>
+              <input type="text" style="width:100%;border:none;border-bottom:1px solid var(--border2);background:transparent;font-size:9px;color:var(--ink);outline:none;">
+            </div>
+          </div>
+        </div>
+        <div class="field-group" style="width:100%;margin-top:4px;"><label>Poids de l'armure</label><input type="number" id="poids-armure" class="weight-inp" placeholder="0" style="width:100%;" oninput="updateTotalWeight()"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div class="section-title" style="margin-bottom:0;border-bottom:none;">Charge</div>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <span style="font-family:'Cinzel',serif;font-size:7.5px;font-weight:700;color:var(--label-color);text-transform:uppercase;">Actuelle :</span>
+            <span id="total-weight" style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--rust);min-width:30px;text-align:right;">0</span>
+            <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--sublabel-color);">kg</span>
+          </div>
+        </div>
+        <div style="border-top:1.5px solid var(--border);padding-top:6px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;">
+          <div class="field-group"><label>Soulevé max</label><input class="big-num-input" type="text"></div>
+          <div class="field-group"><label>Porté max</label><input class="big-num-input" type="text"></div>
+          <div class="field-group"><label>Poussé max</label><input class="big-num-input" type="text"></div>
+        </div>
+      </div>
+
+      <!-- IMPLANTS -->
+      <div class="panel">
+        <div class="section-title">Implants</div>
+        <div class="implant-grid" id="implants-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÉTHODE DE CRÉATION DES CARACTÉRISTIQUES -->
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="section-title">Méthode de création des caractéristiques</div>
+    <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:10px;margin-top:6px;">
+
+      <!-- GAUCHE : 3 méthodes -->
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:3px;padding:6px;">
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--rust);margin-bottom:3px;text-transform:uppercase;border-bottom:1px solid var(--border2);padding-bottom:2px;">Méthode 1 — Officielle</div>
+          <div style="font-family:'IM Fell English',serif;font-size:9px;color:var(--ink);line-height:1.45;">Tirages aux dés de chaque caractéristique avec possibilité de relancer <em>une unique</em> caractéristique.</div>
+        </div>
+        <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:3px;padding:6px;">
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--rust);margin-bottom:3px;text-transform:uppercase;border-bottom:1px solid var(--border2);padding-bottom:2px;">Méthode 2 — Libre</div>
+          <div style="font-family:'IM Fell English',serif;font-size:9px;color:var(--ink);line-height:1.45;">Tirage de 20 dés et répartition libre dans les caractéristiques, sans relance possible.</div>
+        </div>
+        <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:3px;padding:6px;">
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--rust);margin-bottom:3px;text-transform:uppercase;border-bottom:1px solid var(--border2);padding-bottom:2px;">Méthode 3 — Pré-tirés</div>
+          <div style="font-family:'IM Fell English',serif;font-size:9px;color:var(--ink);margin-bottom:3px;">Répartition de D10 pré-tirés :</div>
+          <table style="width:100%;border-collapse:collapse;font-family:'Cinzel',serif;">
+            <thead><tr>
+              <th style="font-size:7px;font-weight:700;color:var(--label-color);text-align:center;border-bottom:1px solid var(--border);padding:1px 3px;">Nb de dés</th>
+              <th style="font-size:7px;font-weight:700;color:var(--label-color);text-align:center;border-bottom:1px solid var(--border);padding:1px 3px;">Résultat</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--ink);">2 ×</td><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--rust);">10</td></tr>
+              <tr style="background:rgba(80,45,5,0.07);"><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--ink);">3 ×</td><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--rust);">9</td></tr>
+              <tr><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--ink);">4 ×</td><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--rust);">8</td></tr>
+              <tr style="background:rgba(80,45,5,0.07);"><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--ink);">4 ×</td><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--rust);">7</td></tr>
+              <tr><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--ink);">4 ×</td><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--rust);">6</td></tr>
+              <tr style="background:rgba(80,45,5,0.07);"><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--ink);">2 ×</td><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--rust);">5</td></tr>
+              <tr><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--ink);">1 ×</td><td style="text-align:center;font-size:9px;font-weight:700;padding:1px;color:var(--rust);">2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DROITE : attribution interactive -->
+      <div style="background:var(--input-bg);border:1.5px solid var(--border);border-radius:3px;padding:8px;">
+        <div style="font-family:'Cinzel',serif;font-size:8.5px;font-weight:700;color:var(--rust);margin-bottom:6px;text-transform:uppercase;border-bottom:1px solid var(--border2);padding-bottom:3px;">
+          Attribution — Méthode 3
+          <span style="float:right;color:var(--ink);font-size:8px;font-weight:700;">Dés restants : <span id="dice-remaining">20</span></span>
+        </div>
+        <div style="margin-bottom:8px;">
+          <div style="font-family:'Cinzel',serif;font-size:7px;font-weight:700;color:var(--label-color);margin-bottom:3px;text-transform:uppercase;">Pool de dés — cliquer ou glisser pour assigner :</div>
+          <div id="dice-pool" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+        </div>
+        <div id="assign-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;"></div>
+        <div style="margin-top:6px;text-align:right;">
+          <button onclick="resetDiceAssign()" style="font-family:'Cinzel',serif;font-size:7.5px;font-weight:700;background:rgba(122,37,16,0.15);border:1px solid var(--rust);color:var(--rust);padding:3px 8px;border-radius:2px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;">↺ Réinitialiser</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">Photocopie autorisée pour un usage strictement privé. © Games Workshop Ltd 2010.</div>
+</div>
+
+<script>
+// =====================
+// DATA
+// =====================
+const CHARS_DEF = [
+  {id:'cc',  short:'CC',  label:'Capacité de Combat (CC)'},
+  {id:'ct',  short:'CT',  label:'Capacité de Tir (CT)'},
+  {id:'f',   short:'F',   label:'Force (F)'},
+  {id:'e',   short:'E',   label:'Endurance (E)'},
+  {id:'ag',  short:'Ag',  label:'Agilité (Ag)'},
+  {id:'int', short:'Int', label:'Intelligence (Int)'},
+  {id:'per', short:'Per', label:'Perception (Per)'},
+  {id:'fm',  short:'FM',  label:'Force Mentale (FM)'},
+  {id:'soc', short:'Soc', label:'Sociabilité (Soc)'},
+];
+
+const charBase = {};
+const charAmelio = {};
+CHARS_DEF.forEach(c => { charBase[c.id] = 0; charAmelio[c.id] = 0; });
+
+function getCharTotal(id) { return (charBase[id] || 0) + charAmelio[id] * 5; }
+function getBonus(id) { return Math.floor(getCharTotal(id) / 10); }
+
+// =====================
+// BUILD CHARS GRID (reusable for both pages)
+// =====================
+function buildCharsGrid(container, suffix) {
+  CHARS_DEF.forEach(ch => {
+    const col = document.createElement('div');
+    col.className = 'char-col';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'char-label';
+    lbl.textContent = ch.label;
+    col.appendChild(lbl);
+
+    const box = document.createElement('div');
+    box.className = 'char-value-box';
+    const inp = document.createElement('input');
+    inp.type = 'number';
+    inp.min = 0; inp.max = 999; inp.value = 0;
+    inp.id = 'char-' + ch.id + suffix;
+    inp.addEventListener('input', () => {
+      charBase[ch.id] = parseInt(inp.value) || 0;
+      syncCharInputs(ch.id);
+      updateAll();
+    });
+    box.appendChild(inp);
+    col.appendChild(box);
+
+    const amelioRow = document.createElement('div');
+    amelioRow.className = 'char-amelio-row';
+    amelioRow.id = 'amelio-' + ch.id + suffix;
+    for (let i = 0; i < 6; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'amelio-btn';
+      btn.title = '+5 pts';
+      btn.dataset.idx = i;
+      btn.dataset.char = ch.id;
+      btn.addEventListener('click', () => {
+        const cur = charAmelio[ch.id];
+        if (cur === i + 1) {
+          charAmelio[ch.id] = i; // deselect
+        } else {
+          charAmelio[ch.id] = i + 1;
+        }
+        refreshAmelioButtons(ch.id);
+        updateAll();
+      });
+      amelioRow.appendChild(btn);
+    }
+    col.appendChild(amelioRow);
+    container.appendChild(col);
+  });
+}
+
+function syncCharInputs(id) {
+  const total = getCharTotal(id);
+  document.querySelectorAll('[id^="char-' + id + '"]').forEach(el => {
+    if (!el.matches(':focus')) el.value = total;
+  });
+}
+
+function refreshAmelioButtons(id) {
+  const cnt = charAmelio[id];
+  document.querySelectorAll('[id^="amelio-' + id + '"]').forEach(row => {
+    Array.from(row.children).forEach((btn, i) => {
+      btn.classList.toggle('filled', i < cnt);
+    });
+  });
+}
+
+buildCharsGrid(document.getElementById('chars-grid'), '-p1');
+buildCharsGrid(document.getElementById('chars-grid2'), '-p2');
+
+// Sync page2 inputs to page1
+document.querySelectorAll('[id$="-p2"]').forEach(inp => {
+  if (inp.tagName === 'INPUT') {
+    inp.addEventListener('input', () => {
+      const id = inp.id.replace('char-', '').replace('-p2', '');
+      charBase[id] = parseInt(inp.value) || 0;
+      syncCharInputs(id);
+      updateAll();
+    });
+  }
+});
+
+// =====================
+// SKILL DATA
+// =====================
+const skillRows = []; // {charId, baseEl, formeEl, p10El, p20El, bonusEl, totalEl, locked}
+
+function buildSkillRow(container, opts) {
+  const {
+    name = '', charId = 'ag', locked = false,
+    isDropdown = false, isManual = false, multiLabel = ''
+  } = opts;
+
+  const sd = { charId, base: locked, forme: false, p10: false, p20: false, bonus: 0 };
+  const rowIndex = skillRows.length;
+  skillRows.push(sd);
+
+  const row = document.createElement('div');
+  row.className = 'skill-row';
+
+  // Name cell
+  const nameCell = document.createElement('div');
+  nameCell.className = 'skill-name-cell';
+  if (isDropdown) {
+    const sel = document.createElement('select');
+    sel.style.cssText = 'font-family:"IM Fell English",serif;font-size:9.5px;border:none;background:transparent;color:var(--ink);width:100%;outline:none;cursor:pointer;';
+    const defOpt = new Option('— choisir —', '');
+    sel.appendChild(defOpt);
+    OPTIONAL_SKILLS.forEach(sk => {
+      sel.appendChild(new Option(sk.name, sk.id));
+    });
+    sel.addEventListener('change', () => {
+      const found = OPTIONAL_SKILLS.find(s => s.id === sel.value);
+      if (found) { sd.charId = found.charId; charMiniSel.value = found.charId; updateSkillRow(rowIndex); }
+    });
+    nameCell.appendChild(sel);
+    sd._nameEl = sel;
+  } else if (isManual) {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = multiLabel || '...';
+    nameCell.appendChild(inp);
+    sd._nameEl = inp;
+  } else {
+    nameCell.textContent = name;
+    sd._nameEl = null;
+  }
+  row.appendChild(nameCell);
+
+  // Char mini select
+  const charMiniSel = document.createElement('select');
+  charMiniSel.className = 'char-mini-sel';
+  CHARS_DEF.forEach(c => charMiniSel.appendChild(new Option(c.short, c.id)));
+  charMiniSel.value = charId;
+  if (locked || (!isDropdown && !isManual)) { charMiniSel.disabled = true; charMiniSel.style.opacity = '0.4'; }
+  charMiniSel.addEventListener('change', () => { sd.charId = charMiniSel.value; updateSkillRow(rowIndex); });
+  row.appendChild(charMiniSel);
+  sd._charSel = charMiniSel;
+
+  // Checkboxes: Base, Formé, +10, +20
+  // Comportement radio : une seule case active à la fois.
+  // Exception : "Base" des compétences verrouillées reste cochée si on décoche une autre case.
+  const checks = ['base','forme','p10','p20'];
+  const cbEls = [];
+  checks.forEach((ck, ckIdx) => {
+    const cell = document.createElement('div');
+    cell.className = 'skill-cb-cell';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    if (locked && ck === 'base') {
+      cb.checked = true;
+      cb.disabled = true;
+      sd.base = true;
+    }
+    cb.addEventListener('change', () => {
+      const nowChecked = cb.checked;
+      // Décocher toutes les cases (sauf base verrouillée)
+      checks.forEach((k, ki) => {
+        sd[k] = false;
+        if (!(locked && k === 'base')) {
+          cbEls[ki].checked = false;
+        }
+      });
+      if (nowChecked) {
+        // Activer la case cliquée
+        sd[ck] = true;
+        cb.checked = true;
+        // Si une case autre que base est cochée sur une ligne verrouillée,
+        // décocher visuellement la base (mais sd.base reste false)
+        if (locked && ck !== 'base') {
+          cbEls[0].checked = false;
+          sd.base = false;
+        }
+      } else {
+        // On décoche : si ligne verrouillée, remettre base
+        if (locked) {
+          sd.base = true;
+          cbEls[0].checked = true;
+        }
+      }
+      updateSkillRow(rowIndex);
+    });
+    cbEls.push(cb);
+    cell.appendChild(cb);
+    row.appendChild(cell);
+  });
+  sd._cbs = cbEls;
+
+  // Bonus input
+  const bonusInp = document.createElement('input');
+  bonusInp.className = 'skill-bonus-inp';
+  bonusInp.type = 'number';
+  bonusInp.placeholder = '0';
+  bonusInp.addEventListener('input', () => { sd.bonus = parseInt(bonusInp.value) || 0; updateSkillRow(rowIndex); });
+  row.appendChild(bonusInp);
+  sd._bonusEl = bonusInp;
+
+  // Total
+  const totalEl = document.createElement('div');
+  totalEl.className = 'skill-total-cell';
+  sd._total = totalEl;
+  row.appendChild(totalEl);
+
+  container.appendChild(row);
+  return row;
+}
+
+function updateSkillRow(idx) {
+  const sd = skillRows[idx];
+  const cv = getCharTotal(sd.charId);
+  let val = 0;
+  if (sd.base) val = Math.floor(cv / 2);
+  else if (sd.forme) val = cv;
+  else if (sd.p10) val = cv + 10;
+  else if (sd.p20) val = cv + 20;
+  val += (sd.bonus || 0);
+  sd._total.textContent = (sd.base || sd.forme || sd.p10 || sd.p20) ? val : '';
+}
+
+function buildSkillHeader(container) {
+  const hdr = document.createElement('div');
+  hdr.className = 'skill-hdr';
+  hdr.innerHTML = `<span>Compétence</span><span>(car.)</span><span>Base</span><span>Formé</span><span>+10</span><span>+20</span><span>Bon.</span><span>Total</span>`;
+  container.appendChild(hdr);
+}
+
+// =====================
+// SKILL DEFINITIONS
+// =====================
+
+// Compétences accessibles à tous (base verrouillée)
+const BASE_SKILLS = [
+  {name:'Charisme',                charId:'soc'},
+  {name:'Commandement',            charId:'soc'},
+  {name:'Contorsionniste',         charId:'ag'},
+  {name:'Déguisement',             charId:'soc'},
+  {name:'Déplacement silencieux',  charId:'ag'},
+  {name:'Dissimulation',           charId:'ag'},
+  {name:'Duperie',                 charId:'soc'},
+  {name:'Enquête',                 charId:'soc'},
+  {name:'Escalade',                charId:'f'},
+  {name:'Esquive',                 charId:'ag'},
+  {name:'Fouille',                 charId:'per'},
+  {name:'Intimidation',            charId:'f'},
+  {name:'Jeu',                     charId:'int'},
+  {name:'Logique',                 charId:'int'},
+  {name:'Marchandage',             charId:'soc'},
+  {name:'Natation',                charId:'f'},
+  {name:'Observation',             charId:'per'},
+  {name:'Résistance aux intoxications', charId:'e'},
+];
+
+// Compétences optionnelles (menus déroulants) — 22 choix
+const OPTIONAL_SKILLS = [
+  {id:'acrobatie',      name:'Acrobatie',                              charId:'ag'},
+  {id:'alphabetisation',name:'Alphabétisation',                        charId:'int'},
+  {id:'baratin',        name:'Baratin',                                charId:'soc'},
+  {id:'chimio',         name:'Chimiomaîtrise',                         charId:'int'},
+  {id:'commerce',       name:'Commerce',                               charId:'soc'},
+  {id:'concentration',  name:'Concentration',                          charId:'fm'},
+  {id:'demolition',     name:'Démolition',                             charId:'int'},
+  {id:'dressage',       name:'Dressage',                               charId:'int'},
+  {id:'escamotage',     name:'Escamotage',                             charId:'ag'},
+  {id:'evaluation',     name:'Évaluation',                             charId:'int'},
+  {id:'filature',       name:'Filature',                               charId:'ag'},
+  {id:'interrogatoire', name:'Interrogatoire',                         charId:'fm'},
+  {id:'intrusion',      name:'Intrusion',                              charId:'ag'},
+  {id:'lecture_levres', name:'Lecture sur les lèvres',                 charId:'per'},
+  {id:'medicae',        name:'Medicae',                                charId:'int'},
+  {id:'orientation',    name:'Orientation',                            charId:'int'},
+  {id:'pistage',        name:'Pistage',                                charId:'int'},
+  {id:'psyniscience',   name:'Psyniscience',                           charId:'per'},
+  {id:'survie',         name:'Survie',                                 charId:'int'},
+  {id:'technomaitrise', name:'Technomaîtrise',                         charId:'int'},
+  {id:'techno_laser',   name:'Technomaîtrise (laser, holographiques)', charId:'int'},
+  {id:'vigilance',      name:'Vigilance',                              charId:'per'},
+];
+
+// Multi-skills (manual name entry, right panel top)
+const MULTI_SKILL_GROUPS = [
+  {label:'Connaissances générales (Int)',    charId:'int', count:5},
+  {label:'Connaissances interdites (Int)',   charId:'int', count:5},
+  {label:'Connaissances scholastiques (Int)',charId:'int', count:5},
+  {label:'Expression artistique (Soc)',      charId:'soc', count:2},
+  {label:'Langue (Int)',                     charId:'int', count:3},
+  {label:'Pilotage (Ag)',                    charId:'ag',  count:5},
+  {label:'Métier (Int)',                     charId:'int', count:3},
+];
+
+// =====================
+// BUILD LEFT PANEL
+// =====================
+const panelLeft = document.getElementById('panel-left');
+buildSkillHeader(panelLeft);
+
+BASE_SKILLS.forEach(sk => buildSkillRow(panelLeft, {name: sk.name, charId: sk.charId, locked: true}));
+
+const sp1 = document.createElement('div');
+sp1.style.cssText = 'height:4px;border-top:1px dashed var(--border2);margin:4px 0;';
+panelLeft.appendChild(sp1);
+
+// 14 menus déroulants optionnels
+for (let i = 0; i < 14; i++) {
+  buildSkillRow(panelLeft, {isDropdown: true, charId: 'ag'});
+}
+
+const sp1b = document.createElement('div');
+sp1b.style.cssText = 'height:4px;border-top:1px dashed var(--border2);margin:4px 0;';
+panelLeft.appendChild(sp1b);
+
+// Helper : groupe de compétence fixe avec sous-lignes manuelles
+function addGroupedSkill(container, label, charId, subCount) {
+  const grpLbl = document.createElement('div');
+  grpLbl.className = 'multi-skill-label';
+  grpLbl.textContent = label;
+  container.appendChild(grpLbl);
+  for (let i = 0; i < subCount; i++) {
+    buildSkillRow(container, {isManual: true, charId, multiLabel: label.split(' (')[0] + '...'});
+  }
+}
+
+addGroupedSkill(panelLeft, 'Codes secrets (Int)',   'int', 3);
+addGroupedSkill(panelLeft, 'Conduite (Ag)',          'ag',  3);
+addGroupedSkill(panelLeft, 'Langage secret (Int)',   'int', 3);
+
+// =====================
+// BUILD RIGHT PANEL
+// =====================
+const panelRight = document.getElementById('panel-right');
+
+// L'entête vient EN PREMIER
+buildSkillHeader(panelRight);
+
+MULTI_SKILL_GROUPS.forEach(grp => {
+  const block = document.createElement('div');
+  block.className = 'multi-skill-block';
+  const lbl = document.createElement('div');
+  lbl.className = 'multi-skill-label';
+  lbl.textContent = grp.label;
+  block.appendChild(lbl);
+
+  for (let i = 0; i < grp.count; i++) {
+    buildSkillRow(block, {isManual: true, charId: grp.charId, multiLabel: grp.label.split(' (')[0] + '...'});
+  }
+  panelRight.appendChild(block);
+});
+
+// Séparateur
+const sp2 = document.createElement('div');
+sp2.style.cssText = 'height:4px;border-top:1px dashed var(--border2);margin:4px 0;';
+panelRight.appendChild(sp2);
+
+// Égalisation : gauche = base(18) + 14 dropdowns + 3 groupes × 3 lignes = 41
+const leftRowCount  = BASE_SKILLS.length + 14 + 9;
+const rightRowCount = MULTI_SKILL_GROUPS.reduce((a, g) => a + g.count, 0);
+const extraRight = Math.max(6, leftRowCount - rightRowCount);
+for (let i = 0; i < extraRight; i++) {
+  buildSkillRow(panelRight, {isManual: true, charId: 'ag'});
+}
+
+// =====================
+// TEXT LINE HELPERS
+// =====================
+function addTextLines(containerId, count) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  for (let i = 0; i < count; i++) {
+    const d = document.createElement('div');
+    d.className = 'text-line';
+    d.innerHTML = '<input type="text">';
+    box.appendChild(d);
+  }
+}
+addTextLines('talents-box', 16);
+addTextLines('traits-box', 12);
+addTextLines('capa-box', 7);
+addTextLines('virtuose-box', 4);
+addTextLines('exotique-box', 3);
+addTextLines('acqui-box', 10);
+
+// Équipement : lignes avec case poids
+function addEquipLines(containerId, count) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  // Header
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;padding:0 1px;';
+  hdr.innerHTML = `<span style="font-family:'Cinzel',serif;font-size:7px;font-weight:700;color:var(--sublabel-color);flex:1;">Objet</span>
+    <span style="font-family:'Cinzel',serif;font-size:7px;font-weight:700;color:var(--sublabel-color);width:28px;text-align:center;">kg</span>`;
+  box.appendChild(hdr);
+  for (let i = 0; i < count; i++) {
+    const d = document.createElement('div');
+    d.className = 'text-line';
+    d.style.cssText = 'display:flex;align-items:center;gap:3px;border-bottom:1px solid var(--border);height:19px;';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.style.cssText = 'flex:1;border:none;background:transparent;font-family:"IM Fell English",serif;font-size:12px;font-weight:600;color:var(--ink);outline:none;padding:1px 2px;min-width:0;';
+    const wInp = document.createElement('input');
+    wInp.type = 'number';
+    wInp.className = 'equip-weight';
+    wInp.placeholder = '0';
+    wInp.style.cssText = 'width:28px;font-family:"Cinzel",serif;font-size:9px;font-weight:700;border:none;border-left:1px solid var(--border2);background:rgba(200,175,110,0.3);color:var(--ink);text-align:center;outline:none;padding:1px 2px;flex-shrink:0;-moz-appearance:textfield;height:100%;';
+    wInp.addEventListener('input', updateTotalWeight);
+    d.appendChild(inp);
+    d.appendChild(wInp);
+    box.appendChild(d);
+  }
+}
+addEquipLines('equip-box', 14);
+addTextLines('mutat-box', 5);
+
+// =====================
+// COMPÉTENCES DE MAÎTRE
+// =====================
+// Collecte tous les noms de compétences pour le menu spécialité
+function getAllSkillNames() {
+  const names = [];
+  BASE_SKILLS.forEach(s => names.push({name: s.name, charId: s.charId}));
+  OPTIONAL_SKILLS.forEach(s => names.push({name: s.name, charId: s.charId}));
+  MULTI_SKILL_GROUPS.forEach(g => names.push({name: g.label.split(' (')[0], charId: g.charId}));
+  ['Codes secrets','Conduite','Langage secret'].forEach((n,i) => {
+    const cids = ['int','ag','int'];
+    names.push({name: n, charId: cids[i]});
+  });
+  return names;
+}
+
+function buildMaitriseRow(container, isDropdown = false) {
+  const sd = { charId: 'ag', p20: true, bonus: 0 };
+  const rowIndex = skillRows.length;
+  skillRows.push(sd);
+
+  const row = document.createElement('div');
+  row.className = 'skill-row';
+  row.style.gridTemplateColumns = '1fr 26px 34px 24px 34px';
+
+  // Nom — dropdown ou manuel
+  const nameCell = document.createElement('div');
+  nameCell.className = 'skill-name-cell';
+  if (isDropdown) {
+    const sel = document.createElement('select');
+    sel.style.cssText = "font-family:'IM Fell English',serif;font-size:9.5px;font-weight:600;border:none;background:transparent;color:var(--ink);width:100%;outline:none;cursor:pointer;";
+    sel.appendChild(new Option('— spécialité —', ''));
+    getAllSkillNames().forEach(s => sel.appendChild(new Option(s.name, s.name + '|' + s.charId)));
+    sel.addEventListener('change', () => {
+      if (sel.value) {
+        const [, cid] = sel.value.split('|');
+        sd.charId = cid;
+        charMiniSel.value = cid;
+        sd.bonus = 10;
+        bonusInp.value = 10;
+        updateSkillRow(rowIndex);
+      }
+    });
+    nameCell.appendChild(sel);
+    sd._nameEl = sel;
+  } else {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = '...';
+    inp.style.cssText = "font-family:'IM Fell English',serif;font-size:9.5px;font-weight:600;border:none;border-bottom:1px solid var(--border2);background:transparent;color:var(--ink);width:100%;outline:none;";
+    nameCell.appendChild(inp);
+    sd._nameEl = inp;
+  }
+  row.appendChild(nameCell);
+
+  // Char select
+  const charMiniSel = document.createElement('select');
+  charMiniSel.className = 'char-mini-sel';
+  CHARS_DEF.forEach(c => charMiniSel.appendChild(new Option(c.short, c.id)));
+  charMiniSel.value = 'ag';
+  if (!isDropdown) {
+    charMiniSel.addEventListener('change', () => { sd.charId = charMiniSel.value; updateSkillRow(rowIndex); });
+  } else {
+    charMiniSel.disabled = true; charMiniSel.style.opacity = '0.5';
+  }
+  row.appendChild(charMiniSel);
+  sd._charSel = charMiniSel;
+
+  // +20 verrouillé
+  const p20cell = document.createElement('div');
+  p20cell.className = 'skill-cb-cell';
+  p20cell.style.gap = '2px';
+  const p20lbl = document.createElement('span');
+  p20lbl.textContent = '+20';
+  p20lbl.style.cssText = 'font-family:"Cinzel",serif;font-size:7px;font-weight:700;color:var(--rust);';
+  const p20cb = document.createElement('input');
+  p20cb.type = 'checkbox'; p20cb.checked = true; p20cb.disabled = true;
+  p20cell.appendChild(p20lbl); p20cell.appendChild(p20cb);
+  row.appendChild(p20cell);
+  sd.p20 = true; sd._cbs = [null, null, null, p20cb];
+
+  // Bonus
+  const bonusInp = document.createElement('input');
+  bonusInp.className = 'skill-bonus-inp';
+  bonusInp.type = 'number';
+  bonusInp.placeholder = '0';
+  if (isDropdown) bonusInp.value = ''; // sera rempli à la sélection
+  bonusInp.addEventListener('input', () => { sd.bonus = parseInt(bonusInp.value) || 0; updateSkillRow(rowIndex); });
+  row.appendChild(bonusInp);
+  sd._bonusEl = bonusInp;
+
+  // Total
+  const totalEl = document.createElement('div');
+  totalEl.className = 'skill-total-cell';
+  sd._total = totalEl;
+  row.appendChild(totalEl);
+
+  container.appendChild(row);
+}
+
+const panelMaitrise = document.getElementById('panel-maitrise');
+
+// Header principal
+const maitriseHdr = document.createElement('div');
+maitriseHdr.style.cssText = 'display:grid;grid-template-columns:1fr 26px 34px 24px 34px;gap:0;align-items:center;margin-bottom:4px;background:rgba(80,45,5,0.20);border-radius:2px;padding:3px 2px;border:1px solid var(--border2);';
+maitriseHdr.innerHTML = `
+  <span style="font-family:'Cinzel',serif;font-size:6.5px;font-weight:700;text-transform:uppercase;color:var(--ink);">Compétence</span>
+  <span style="font-family:'Cinzel',serif;font-size:6.5px;font-weight:700;text-transform:uppercase;color:var(--ink);text-align:center;">(car.)</span>
+  <span style="font-family:'Cinzel',serif;font-size:6.5px;font-weight:700;text-transform:uppercase;color:var(--rust);text-align:center;">+20 ✓</span>
+  <span style="font-family:'Cinzel',serif;font-size:6.5px;font-weight:700;text-transform:uppercase;color:var(--ink);text-align:center;">Bon.</span>
+  <span style="font-family:'Cinzel',serif;font-size:6.5px;font-weight:700;text-transform:uppercase;color:var(--ink);text-align:center;">Total</span>`;
+panelMaitrise.appendChild(maitriseHdr);
+
+// 6 lignes de base (manuelles)
+for (let i = 0; i < 6; i++) buildMaitriseRow(panelMaitrise, false);
+
+// Séparateur + entête Spécialité
+const maitriseSpecSep = document.createElement('div');
+maitriseSpecSep.style.cssText = 'height:4px;border-top:1px dashed var(--border2);margin:4px 0;';
+panelMaitrise.appendChild(maitriseSpecSep);
+
+const maitriseSpecHdr = document.createElement('div');
+maitriseSpecHdr.style.cssText = "font-family:'Cinzel',serif;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--rust);margin-bottom:3px;padding:2px 3px;background:rgba(122,37,16,0.08);border-radius:2px;border-left:2px solid var(--rust);";
+maitriseSpecHdr.textContent = 'Spécialité (+10 auto)';
+panelMaitrise.appendChild(maitriseSpecHdr);
+
+// 5 lignes dropdown spécialité
+for (let i = 0; i < 5; i++) buildMaitriseRow(panelMaitrise, true);
+
+// 5 lignes manuelles spécialité
+const maitriseManHdr = document.createElement('div');
+maitriseManHdr.style.cssText = "font-family:'Cinzel',serif;font-size:7.5px;font-style:italic;color:var(--sublabel-color);margin:3px 0 2px;padding-left:2px;";
+maitriseManHdr.textContent = 'Spécialité libre :';
+panelMaitrise.appendChild(maitriseManHdr);
+for (let i = 0; i < 5; i++) buildMaitriseRow(panelMaitrise, false);
+
+// =====================
+// MOUVEMENT
+// =====================
+const MOVE_FIELDS = [
+  {id:'mv-demi',   label:'Demi-déplacement',   formula:'BA × 1'},
+  {id:'mv-comp',   label:'Déplacement complet', formula:'BA × 2'},
+  {id:'mv-charge', label:'Charge',              formula:'BA × 3'},
+  {id:'mv-course', label:'Course',              formula:'BA × 6'},
+  {id:'mv-long',   label:'Saut longueur',       formula:'BF × 1 m'},
+  {id:'mv-haut',   label:'Saut hauteur',        formula:'BF × 20 cm'},
+];
+const moveGrid = document.getElementById('move-grid');
+MOVE_FIELDS.forEach(mf => {
+  const div = document.createElement('div');
+  div.className = 'move-cell';
+  div.innerHTML = `<label>${mf.label}</label><div class="move-val" id="${mf.id}">0</div><div class="move-formula">(${mf.formula})</div>`;
+  moveGrid.appendChild(div);
+});
+
+function updateMovement() {
+  const ba = getBonus('ag');
+  const bf = getBonus('f');
+  document.getElementById('mv-demi').textContent   = ba * 1;
+  document.getElementById('mv-comp').textContent   = ba * 2;
+  document.getElementById('mv-charge').textContent = ba * 3;
+  document.getElementById('mv-course').textContent = ba * 6;
+  document.getElementById('mv-long').textContent   = bf;
+  document.getElementById('mv-haut').textContent   = Math.round(bf * 20) + ' cm';
+}
+
+// =====================
+// WEAPONS
+// =====================
+const weaponsContainer = document.getElementById('weapons-container');
+for (let w = 0; w < 5; w++) {
+  const block = document.createElement('div');
+  block.className = 'weapon-block';
+  block.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <span style="font-family:'Cinzel',serif;font-size:8.5px;color:var(--ink2);font-weight:600;text-transform:uppercase;letter-spacing:1px;">— Arme ${w+1} —</span>
+      <span style="display:flex;align-items:center;gap:3px;">
+        <span class="wlabel" style="margin:0;">Poids</span>
+        <input class="winput weight-inp weapon-weight" type="number" placeholder="0" style="width:36px;" oninput="updateTotalWeight()">
+      </span>
+    </div>
+    <div style="margin-bottom:3px;"><span class="wlabel">Nom</span><input class="winput" type="text"></div>
+    <div class="weapon-grid">
+      <div><span class="wlabel">Groupe</span><input class="winput" type="text"></div>
+      <div><span class="wlabel">Dégâts</span><input class="winput" type="text"></div>
+      <div><span class="wlabel">Type</span><input class="winput" type="text"></div>
+      <div><span class="wlabel">Pén</span><input class="winput" type="text"></div>
+    </div>
+    <div class="weapon-row2">
+      <div><span class="wlabel">Portée</span><input class="winput" type="text"></div>
+      <div><span class="wlabel">Mode</span><input class="winput" type="text"></div>
+      <div><span class="wlabel">AT</span><input class="winput" type="text"></div>
+      <div><span class="wlabel">Rch</span><input class="winput" type="text"></div>
+    </div>
+    <div><span class="wlabel">Attributs</span><input class="winput" type="text"></div>
+  `;
+  weaponsContainer.appendChild(block);
+}
+
+// =====================
+// MAÎTRISE DES ARMES
+// =====================
+function buildMasteryTable(tableId, rows, cols) {
+  const tbl = document.getElementById(tableId);
+  if (!tbl) return;
+
+  // Header
+  const thead = document.createElement('thead');
+  const trH = document.createElement('tr');
+  const thEmpty = document.createElement('th');
+  thEmpty.style.cssText = 'width:90px;padding:2px 3px;border-bottom:1px solid var(--border);';
+  trH.appendChild(thEmpty);
+  cols.forEach(col => {
+    const th = document.createElement('th');
+    th.textContent = col;
+    th.style.cssText = 'text-align:center;padding:2px 3px;border-bottom:1px solid var(--border);font-size:7.5px;font-weight:700;color:var(--label-color);';
+    trH.appendChild(th);
+  });
+  thead.appendChild(trH);
+  tbl.appendChild(thead);
+
+  // Body
+  const tbody = document.createElement('tbody');
+  rows.forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    if (ri % 2 === 1) tr.style.background = 'rgba(80,45,5,0.06)';
+
+    const tdLabel = document.createElement('td');
+    tdLabel.textContent = row;
+    tdLabel.style.cssText = "font-family:'Cinzel',serif;font-size:8.5px;font-weight:700;color:var(--ink2);padding:2px 4px;";
+    tr.appendChild(tdLabel);
+
+    cols.forEach(() => {
+      const td = document.createElement('td');
+      td.style.cssText = 'text-align:center;padding:2px;';
+      const btn = document.createElement('button');
+      btn.style.cssText = `width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border);
+        background:transparent;cursor:pointer;transition:background 0.15s,border-color 0.15s;
+        display:inline-block;vertical-align:middle;`;
+      btn.addEventListener('click', () => {
+        const active = btn.dataset.active === '1';
+        btn.dataset.active = active ? '0' : '1';
+        btn.style.background = active ? 'transparent' : 'var(--rust)';
+        btn.style.borderColor = active ? 'var(--border)' : 'var(--rust)';
+      });
+      td.appendChild(btn);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+}
+
+buildMasteryTable('mastery-ranged',
+  ['Bolts', 'Fusion', 'MS', 'Plasma', 'Lance-flammes', 'Laser', 'Primitive', 'Astartes'],
+  ['Poing', 'Base', 'Lourdes']
+);
+
+buildMasteryTable('mastery-melee',
+  ['Décharge', 'Énergétiques', 'Primitives', 'Tronçonneuses', 'Astartes'],
+  ['CàC', 'Jet']
+);
+
+// =====================
+// IMPLANTS
+// =====================
+const implantsContainer = document.getElementById('implants-container');
+if (implantsContainer) {
+  implantsContainer.style.cssText = 'display:flex;flex-direction:column;gap:3px;margin-top:2px;';
+  for (let i = 0; i < 6; i++) {
+    const slot = document.createElement('div');
+    slot.style.cssText = 'display:flex;align-items:center;gap:5px;border-bottom:1px solid var(--border2);padding-bottom:2px;';
+    const num = document.createElement('span');
+    num.textContent = (i + 1) + '.';
+    num.style.cssText = "font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--sublabel-color);flex-shrink:0;width:14px;";
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = 'Implant...';
+    inp.style.cssText = "flex:1;border:none;background:transparent;font-family:'IM Fell English',serif;font-size:11px;font-weight:600;color:var(--ink);outline:none;padding:1px 0;";
+    slot.appendChild(num);
+    slot.appendChild(inp);
+    implantsContainer.appendChild(slot);
+  }
+}
+
+// =====================
+// POIDS TOTAL (Charge actuelle)
+// =====================
+function updateTotalWeight() {
+  let total = 0;
+  // Poids des armes
+  document.querySelectorAll('.weapon-weight').forEach(el => { total += parseFloat(el.value) || 0; });
+  // Poids de l'équipement
+  document.querySelectorAll('.equip-weight').forEach(el => { total += parseFloat(el.value) || 0; });
+  // Poids de l'armure
+  const pa = document.getElementById('poids-armure');
+  if (pa) total += parseFloat(pa.value) || 0;
+  // Affichage
+  const tw = document.getElementById('total-weight');
+  if (tw) tw.textContent = total % 1 === 0 ? total : total.toFixed(1);
+}
+
+// =====================
+// GLOBAL UPDATE
+// =====================
+function updateAll() {
+  // Update char display values
+  CHARS_DEF.forEach(ch => {
+    const total = getCharTotal(ch.id);
+    document.querySelectorAll('[id^="char-' + ch.id + '-"]').forEach(el => {
+      if (!el.matches(':focus')) el.value = total;
+    });
+    refreshAmelioButtons(ch.id);
+  });
+
+  // Update all skill totals
+  for (let i = 0; i < skillRows.length; i++) updateSkillRow(i);
+
+  updateMovement();
+}
+
+// Init
+updateAll();
+
+// =====================
+// DICE ASSIGNMENT (Méthode 3)
+// =====================
+const DICE_POOL_DEF = [10,10, 9,9,9, 8,8,8,8, 7,7,7,7, 6,6,6,6, 5,5, 2];
+
+const ASSIGN_TARGETS = [
+  {id:'da-cc',   label:'CC',            max:2},
+  {id:'da-ct',   label:'CT',            max:2},
+  {id:'da-f',    label:'Force',         max:2},
+  {id:'da-e',    label:'Endurance',     max:2},
+  {id:'da-ag',   label:'Agilité',       max:2},
+  {id:'da-int',  label:'Intelligence',  max:2},
+  {id:'da-per',  label:'Perception',    max:2},
+  {id:'da-fm',   label:'Force Ment.',   max:2},
+  {id:'da-soc',  label:'Sociabilité',   max:2},
+  {id:'da-bless',label:'Blessures',     max:1},
+  {id:'da-dest', label:'Destin',        max:1},
+];
+
+const CHAR_MAP_DA = {
+  'da-cc':'cc','da-ct':'ct','da-f':'f','da-e':'e',
+  'da-ag':'ag','da-int':'int','da-per':'per','da-fm':'fm','da-soc':'soc'
+};
+
+let diceState = DICE_POOL_DEF.map((val, i) => ({id: i, val, assignedTo: null}));
+let selectedDie = null;
+const diceBonus = {};
+const lastAssignedTotal = {}; // conserve la dernière valeur propagée même si dé retiré
+ASSIGN_TARGETS.forEach(t => { diceBonus[t.id] = 0; lastAssignedTotal[t.id] = 0; });
+
+function getDiceRemaining() { return diceState.filter(d => d.assignedTo === null).length; }
+function getDiceForTarget(tid) { return diceState.filter(d => d.assignedTo === tid); }
+
+function renderDicePool() {
+  const pool = document.getElementById('dice-pool');
+  if (!pool) return;
+  pool.innerHTML = '';
+  diceState.filter(d => d.assignedTo === null).forEach(d => {
+    const btn = document.createElement('button');
+    btn.textContent = d.val;
+    btn.draggable = true;
+    const isSel = selectedDie === d.id;
+    btn.style.cssText = `font-family:'Cinzel',serif;font-size:11px;font-weight:700;width:28px;height:28px;border-radius:4px;cursor:grab;
+      border:2px solid ${isSel?'#7a2510':'#6a4a18'};background:${isSel?'rgba(122,37,16,0.25)':'rgba(220,195,130,0.8)'};
+      color:${isSel?'#7a2510':'#120800'};box-shadow:${isSel?'0 0 0 2px rgba(122,37,16,0.4)':'none'};`;
+    btn.addEventListener('click', () => { selectedDie = (selectedDie===d.id)?null:d.id; renderDicePool(); renderAssignGrid(); });
+    btn.addEventListener('dragstart', e => { e.dataTransfer.setData('dieId', d.id); selectedDie = d.id; btn.style.opacity='0.4'; renderAssignGrid(); });
+    btn.addEventListener('dragend', () => { btn.style.opacity='1'; });
+    pool.appendChild(btn);
+  });
+  const rem = document.getElementById('dice-remaining');
+  if (rem) rem.textContent = getDiceRemaining();
+}
+
+function renderAssignGrid() {
+  const grid = document.getElementById('assign-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  ASSIGN_TARGETS.forEach(t => {
+    const cell = document.createElement('div');
+    cell.style.cssText = 'background:rgba(200,175,110,0.4);border:1px solid #6a4a18;border-radius:3px;padding:4px 5px;';
+
+    const lbl = document.createElement('div');
+    lbl.textContent = t.label;
+    lbl.style.cssText = "font-family:'Cinzel',serif;font-size:7.5px;font-weight:700;color:#2a1508;text-transform:uppercase;margin-bottom:3px;";
+    cell.appendChild(lbl);
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:3px;align-items:center;';
+
+    const assigned = getDiceForTarget(t.id);
+
+    // Slots
+    for (let si = 0; si < t.max; si++) {
+      if (si < assigned.length) {
+        const d = assigned[si];
+        const chip = document.createElement('button');
+        chip.textContent = d.val;
+        chip.style.cssText = "font-family:'Cinzel',serif;font-size:10px;font-weight:700;width:24px;height:22px;border-radius:3px;border:1.5px solid #7a2510;background:rgba(122,37,16,0.18);color:#7a2510;cursor:pointer;flex-shrink:0;";
+        chip.addEventListener('click', () => { diceState.find(x=>x.id===d.id).assignedTo=null; renderDicePool(); renderAssignGrid(); });
+        row.appendChild(chip);
+      } else {
+        const canAssign = selectedDie !== null;
+        const addBtn = document.createElement('button');
+        addBtn.textContent = '+';
+        addBtn.style.cssText = `font-family:'Cinzel',serif;font-size:14px;font-weight:700;width:24px;height:22px;border-radius:3px;
+          border:1.5px ${canAssign?'solid #6a4a18':'dashed rgba(100,74,24,0.35)'};
+          background:${canAssign?'rgba(100,74,24,0.18)':'transparent'};
+          color:${canAssign?'#3a2008':'rgba(100,74,24,0.3)'};
+          cursor:${canAssign?'pointer':'default'};flex-shrink:0;line-height:1;`;
+        if (canAssign) {
+          addBtn.addEventListener('click', () => {
+            const die = diceState.find(x=>x.id===selectedDie);
+            if (die) { die.assignedTo=t.id; selectedDie=null; renderDicePool(); renderAssignGrid(); }
+          });
+        }
+        addBtn.addEventListener('dragover', e => { e.preventDefault(); addBtn.style.background='rgba(122,37,16,0.25)'; addBtn.style.borderColor='#7a2510'; });
+        addBtn.addEventListener('dragleave', () => { addBtn.style.background=canAssign?'rgba(100,74,24,0.18)':'transparent'; addBtn.style.borderColor=canAssign?'#6a4a18':'rgba(100,74,24,0.35)'; });
+        addBtn.addEventListener('drop', e => {
+          e.preventDefault();
+          const dieId = parseInt(e.dataTransfer.getData('dieId'));
+          const die = diceState.find(x=>x.id===dieId);
+          if (die && getDiceForTarget(t.id).length < t.max) { die.assignedTo=t.id; selectedDie=null; renderDicePool(); renderAssignGrid(); }
+        });
+        row.appendChild(addBtn);
+      }
+    }
+
+    const sep = document.createElement('span'); sep.style.flex='1'; row.appendChild(sep);
+
+    // Bonus
+    const bonusInp = document.createElement('input');
+    bonusInp.type = 'number';
+    bonusInp.placeholder = '+0';
+    bonusInp.value = diceBonus[t.id] || '';
+    bonusInp.style.cssText = "font-family:'Cinzel',serif;font-size:9px;font-weight:700;width:30px;height:22px;border:1px solid #6a4a18;border-radius:3px;background:rgba(220,195,130,0.6);color:#120800;text-align:center;outline:none;flex-shrink:0;-moz-appearance:textfield;";
+    bonusInp.addEventListener('input', () => { diceBonus[t.id]=parseInt(bonusInp.value)||0; renderAssignGrid(); });
+    row.appendChild(bonusInp);
+
+    // Total
+    const diceSum = assigned.reduce((s,d)=>s+d.val,0);
+    const bonus = diceBonus[t.id]||0;
+    const total = diceSum + bonus;
+    const totalEl = document.createElement('div');
+    totalEl.style.cssText = `font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:${(diceSum>0||bonus)?'#7a2510':'#bbb'};width:30px;text-align:center;flex-shrink:0;`;
+    totalEl.textContent = (diceSum>0||bonus) ? total : '—';
+    row.appendChild(totalEl);
+    cell.appendChild(row);
+
+    const maxLbl = document.createElement('div');
+    maxLbl.textContent = `max ${t.max} dé${t.max>1?'s':''}`;
+    maxLbl.style.cssText = "font-family:'Cinzel',serif;font-size:6px;color:#8a6820;margin-top:2px;text-align:right;";
+    cell.appendChild(maxLbl);
+    grid.appendChild(cell);
+
+    // Propagation — mémorise le total et le conserve même si dé retiré
+    if (CHAR_MAP_DA[t.id]) {
+      const cid = CHAR_MAP_DA[t.id];
+      if (diceSum > 0 || bonus) {
+        lastAssignedTotal[t.id] = total;
+      }
+      const propagated = lastAssignedTotal[t.id];
+      if (propagated > 0) {
+        charBase[cid] = propagated;
+        document.querySelectorAll('[id^="char-'+cid+'-"]').forEach(el => { if(!el.matches(':focus')) el.value = getCharTotal(cid); });
+        for (let i=0;i<skillRows.length;i++) updateSkillRow(i);
+        updateMovement();
+      }
+    }
+    if (t.id==='da-bless') {
+      if (diceSum > 0 || bonus) lastAssignedTotal[t.id] = total;
+      const bi = document.getElementById('bless-total');
+      if (bi && !bi.matches(':focus') && lastAssignedTotal[t.id] > 0) {
+        bi.value = lastAssignedTotal[t.id];
+      }
+    }
+  });
+}
+
+function resetDiceAssign() {
+  diceState = DICE_POOL_DEF.map((val,i)=>({id:i,val,assignedTo:null}));
+  selectedDie = null;
+  ASSIGN_TARGETS.forEach(t => { diceBonus[t.id] = 0; lastAssignedTotal[t.id] = 0; });
+  // Remettre les carac à 0
+  ASSIGN_TARGETS.forEach(t => {
+    if (CHAR_MAP_DA[t.id]) {
+      const cid = CHAR_MAP_DA[t.id];
+      charBase[cid] = 0;
+      document.querySelectorAll('[id^="char-'+cid+'-"]').forEach(el => { el.value = 0; });
+    }
+  });
+  const bi = document.getElementById('bless-total');
+  if (bi) bi.value = '';
+  updateAll();
+  renderDicePool(); renderAssignGrid();
+}
+
+renderDicePool();
+renderAssignGrid();
+
+// =====================
+// SAUVEGARDE JSON
+// =====================
+
+function collectFormData() {
+  const data = {};
+
+  // Champs identifiés
+  const ids = ['nom','joueur','monde','historique','particularite','motiv','carriere',
+    'carriere-exaltee','promo','divination','xp-avail','xp-spent','bless-total','poids-armure'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+
+  // Caractéristiques
+  data.charBase   = {...charBase};
+  data.charAmelio = {...charAmelio};
+
+  // Compétences : état complet depuis skillRows
+  data.skills = skillRows.map(sd => ({
+    charId: sd.charId,
+    base:  sd.base,
+    forme: sd.forme,
+    p10:   sd.p10,
+    p20:   sd.p20,
+    bonus: sd.bonus,
+    charSelValue: sd._charSel ? sd._charSel.value : sd.charId,
+    nameValue: sd._nameEl ? sd._nameEl.value : '',
+  }));
+
+  // Tous les inputs (par index — pour champs libres non couverts par skills)
+  data.allInputs = [];
+  document.querySelectorAll('.page input[type=text], .page input[type=number]').forEach((el, i) => {
+    data.allInputs.push({ idx: i, value: el.value });
+  });
+
+  // Tous les selects
+  data.allSelects = [];
+  document.querySelectorAll('.page select').forEach((sel, i) => {
+    data.allSelects.push({ idx: i, value: sel.value });
+  });
+
+  // Maîtrise des armes
+  data.masteryBtns = [];
+  document.querySelectorAll('#mastery-ranged button, #mastery-melee button').forEach((btn, i) => {
+    data.masteryBtns.push({ idx: i, active: btn.dataset.active === '1' });
+  });
+
+  // Dés création
+  data.diceState         = diceState.map(d => ({...d}));
+  data.diceBonus         = {...diceBonus};
+  data.lastAssignedTotal = {...lastAssignedTotal};
+
+  return data;
+}
+
+function applyFormData(data) {
+  const ids = ['nom','joueur','monde','historique','particularite','motiv','carriere',
+    'carriere-exaltee','promo','divination','xp-avail','xp-spent','bless-total','poids-armure'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && data[id] !== undefined) el.value = data[id];
+  });
+
+  if (data.charBase)   Object.assign(charBase,   data.charBase);
+  if (data.charAmelio) Object.assign(charAmelio, data.charAmelio);
+  CHARS_DEF.forEach(ch => { syncCharInputs(ch.id); refreshAmelioButtons(ch.id); });
+
+  // Restaurer les compétences depuis skillRows
+  if (data.skills) {
+    data.skills.forEach((saved, i) => {
+      const sd = skillRows[i];
+      if (!sd) return;
+
+      sd.charId = saved.charId;
+      sd.base   = saved.base;
+      sd.forme  = saved.forme;
+      sd.p10    = saved.p10;
+      sd.p20    = saved.p20;
+      sd.bonus  = saved.bonus;
+
+      // Restaurer le select de caractéristique
+      if (sd._charSel) sd._charSel.value = saved.charSelValue || saved.charId;
+
+      // Restaurer le nom (input ou select)
+      if (sd._nameEl && saved.nameValue !== undefined) {
+        sd._nameEl.value = saved.nameValue;
+      }
+
+      // Restaurer les checkboxes (radio-like)
+      if (sd._cbs) {
+        const keys = ['base','forme','p10','p20'];
+        keys.forEach((k, ki) => {
+          const cb = sd._cbs[ki];
+          if (!cb || cb.disabled) return;
+          cb.checked = !!saved[k];
+        });
+      }
+
+      // Restaurer le bonus
+      if (sd._bonusEl) sd._bonusEl.value = saved.bonus || '';
+
+      updateSkillRow(i);
+    });
+  }
+
+  // Inputs généraux (champs libres, noms d'armes, équipement, implants…)
+  if (data.allInputs) {
+    const els = document.querySelectorAll('.page input[type=text], .page input[type=number]');
+    data.allInputs.forEach(item => { if (els[item.idx]) els[item.idx].value = item.value; });
+  }
+
+  // Selects
+  if (data.allSelects) {
+    const sels = document.querySelectorAll('.page select');
+    data.allSelects.forEach(item => { if (sels[item.idx]) sels[item.idx].value = item.value; });
+  }
+
+  // Maîtrise
+  if (data.masteryBtns) {
+    const btns = document.querySelectorAll('#mastery-ranged button, #mastery-melee button');
+    data.masteryBtns.forEach(item => {
+      if (!btns[item.idx]) return;
+      btns[item.idx].dataset.active   = item.active ? '1' : '0';
+      btns[item.idx].style.background  = item.active ? 'var(--rust)' : 'transparent';
+      btns[item.idx].style.borderColor = item.active ? 'var(--rust)' : 'var(--border)';
+    });
+  }
+
+  // Dés
+  if (data.diceState) diceState.splice(0, diceState.length, ...data.diceState);
+  if (data.diceBonus) Object.assign(diceBonus, data.diceBonus);
+  if (data.lastAssignedTotal) Object.assign(lastAssignedTotal, data.lastAssignedTotal);
+
+  renderDicePool();
+  renderAssignGrid();
+  updateAll();
+  updateTotalWeight();
+}
+
+function exportCharacter() {
+  const nom   = (document.getElementById('nom')?.value || 'personnage').trim().replace(/[^a-zA-Z0-9_\-\u00C0-\u024F ]/g, '');
+  const fname = (nom || 'Dark_Heresy') + '.json';
+  const blob  = new Blob([JSON.stringify(collectFormData(), null, 2)], {type: 'application/json'});
+  const url   = URL.createObjectURL(blob);
+  const a     = document.createElement('a');
+  a.href = url; a.download = fname; a.click();
+  URL.revokeObjectURL(url);
+  showStatus('✓ Exporté : ' + fname, '#2a6a2a');
+}
+
+function importCharacter(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      applyFormData(data);
+      showStatus('✓ Chargé : ' + file.name, '#2a4a8a');
+    } catch(err) {
+      showStatus('Erreur : fichier invalide', '#7a2510');
+    }
+  };
+  reader.readAsText(file);
+  // Reset input pour permettre de recharger le même fichier
+  event.target.value = '';
+}
+
+function showStatus(msg, color) {
+  const el = document.getElementById('save-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color || 'var(--sublabel-color)';
+  setTimeout(() => { el.textContent = ''; }, 3000);
+}
+</script>
+
+<!-- =========== PAGE 3 : CRÉATION DE PERSONNAGE =========== -->
+<div class="page" id="page3">
+  <div class="page-title">⸻ Dark Heresy — Création de Personnage ⸻</div>
+
+  <!-- BARRE DE PROGRESSION -->
+  <div id="creation-steps" style="display:flex;gap:0;margin-bottom:12px;border:1.5px solid var(--border);border-radius:3px;overflow:hidden;">
+  </div>
+
+  <!-- ZONE DE CHARGEMENT -->
+  <div id="creation-loading" style="text-align:center;padding:30px;font-family:'Cinzel',serif;font-size:12px;color:var(--sublabel-color);">
+    ⚙ Connexion à la base de données...
+  </div>
+
+  <!-- ÉTAPES -->
+  <div id="creation-content" style="display:none;">
+
+    <!-- ÉTAPE 1 : MONDE NATAL -->
+    <div class="creation-step" id="step-1">
+      <div class="section-title">Étape 1 — Monde natal / Origine</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+        <div>
+          <div class="field-group" style="margin-bottom:8px;">
+            <label>Choisissez votre origine</label>
+            <select id="sel-monde" style="width:100%;font-family:'IM Fell English',serif;font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--input-bg);color:var(--ink);padding:4px 6px;outline:none;border-radius:2px;">
+              <option value="">— Sélectionner —</option>
+            </select>
+          </div>
+          <div id="monde-description" style="font-family:'IM Fell English',serif;font-size:11px;color:var(--ink2);font-style:italic;padding:6px;background:rgba(80,45,5,0.06);border-left:2px solid var(--border);border-radius:2px;min-height:40px;"></div>
+
+          <!-- Points de Blessures -->
+          <div id="blessures-section" style="display:none;margin-top:10px;background:rgba(80,45,5,0.06);border:1px solid var(--border2);border-radius:3px;padding:8px;">
+            <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:5px;">Points de Blessures</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:var(--rust);" id="bless-formule-display"></span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--sublabel-color);">= </span>
+              <input type="number" id="bless-creation-roll" min="1" max="20" placeholder="jet" style="width:45px;font-family:'Cinzel',serif;font-size:14px;font-weight:700;border:1.5px solid var(--border);background:var(--input-bg);color:var(--ink);text-align:center;padding:3px;outline:none;" oninput="applyBlessures()">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--sublabel-color);">→ Total :</span>
+              <span id="bless-total-display" style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--rust);">—</span>
+            </div>
+            <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--sublabel-color);margin-top:3px;">Saisissez votre résultat de dé, le total est calculé et reporté en page 2.</div>
+          </div>
+
+          <!-- Points de Destin -->
+          <div id="destin-section" style="display:none;margin-top:8px;background:rgba(80,45,5,0.06);border:1px solid var(--border2);border-radius:3px;padding:8px;">
+            <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:5px;">Points de Destin (1d10)</div>
+            <table id="destin-table" style="width:100%;border-collapse:collapse;font-family:'Cinzel',serif;font-size:9px;margin-bottom:6px;"></table>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;">
+              <span style="font-size:9px;color:var(--sublabel-color);">Résultat du d10 :</span>
+              <input type="number" id="destin-creation-roll" min="1" max="10" placeholder="1-10"
+                style="width:45px;font-family:'Cinzel',serif;font-size:14px;font-weight:700;
+                border:1.5px solid var(--border);background:var(--input-bg);color:var(--ink);
+                text-align:center;padding:3px;outline:none;" oninput="applyDestin()">
+              <span style="font-size:9px;color:var(--sublabel-color);">→ Points de Destin :</span>
+              <span id="destin-total-display" style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--rust);">—</span>
+            </div>
+          </div>
+
+          <!-- Lieu d'origine -->
+          <div id="origine-section" style="display:none;margin-top:8px;">
+            <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:4px;">Lieu d'origine (1d100) — optionnel</div>
+            <div style="display:flex;gap:8px;align-items:center;margin:4px 0;">
+              <button onclick="rollOrigine()" class="cr-btn cr-btn-gold">🎲 Tirer</button>
+              <input type="number" id="roll-origine" min="1" max="100" style="width:55px;font-family:'Cinzel',serif;font-size:12px;border:1px solid var(--border);background:var(--input-bg);color:var(--ink);text-align:center;padding:3px;outline:none;" onchange="applyOrigine()">
+            </div>
+            <div id="origine-result" style="font-size:10px;padding:6px;background:rgba(80,45,5,0.06);border-left:2px solid var(--gold);border-radius:2px;display:none;"></div>
+          </div>
+        </div>
+
+        <div id="monde-details" style="display:none;">
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:4px;">Traits innés</div>
+          <div id="monde-traits" style="font-size:10px;margin-bottom:8px;"></div>
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:4px;">Compétences innées</div>
+          <div id="monde-competences" style="font-size:10px;margin-bottom:8px;"></div>
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:4px;">Bonus aux caractéristiques</div>
+          <div id="monde-carac-bonus" style="font-size:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 : CARACTÉRISTIQUES -->
+    <div class="creation-step" id="step-2" style="display:none;">
+      <div class="section-title">Étape 2 — Caractéristiques (2d10 + bonus d'origine)</div>
+      <div style="margin:8px 0 4px;font-family:'Cinzel',serif;font-size:9px;color:var(--sublabel-color);">
+        Saisissez vos résultats de dés (les bonus d'origine sont déjà inclus dans les valeurs de base affichées).
+      </div>
+      <div id="carac-creation-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;"></div>
+    </div>
+
+    <!-- ÉTAPE 3 : PLAN DE CARRIÈRE -->
+    <div class="creation-step" id="step-3" style="display:none;">
+      <div class="section-title">Étape 3 — Plan de carrière</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+        <div>
+          <div class="field-group" style="margin-bottom:8px;">
+            <label>Carrières disponibles pour votre origine</label>
+            <select id="sel-carriere" style="width:100%;font-family:'IM Fell English',serif;font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--input-bg);color:var(--ink);padding:4px 6px;outline:none;border-radius:2px;" onchange="onCarriereChange()">
+              <option value="">— Sélectionner —</option>
+            </select>
+          </div>
+          <div id="carriere-description" style="font-family:'IM Fell English',serif;font-size:11px;color:var(--ink2);font-style:italic;padding:6px;background:rgba(80,45,5,0.06);border-left:2px solid var(--border);border-radius:2px;min-height:40px;"></div>
+        </div>
+        <div id="carriere-details" style="display:none;">
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:3px;">Compétences de départ</div>
+          <div id="carriere-competences" style="font-size:10px;margin-bottom:6px;"></div>
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:3px;">Talents de départ</div>
+          <div id="carriere-talents" style="font-size:10px;margin-bottom:6px;"></div>
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:3px;">Équipement de départ</div>
+          <div id="carriere-equipement" style="font-size:10px;margin-bottom:6px;"></div>
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:3px;">Promotion de départ</div>
+          <div id="carriere-promotion" style="font-size:11px;font-family:'Cinzel',serif;font-weight:700;color:var(--rust);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 4 : HISTORIQUE -->
+    <div class="creation-step" id="step-4" style="display:none;">
+      <div class="section-title">Étape 4 — Historique / Vécu</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+        <div>
+          <div class="field-group" style="margin-bottom:8px;">
+            <label>Historiques disponibles</label>
+            <select id="sel-historique" style="width:100%;font-family:'IM Fell English',serif;font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--input-bg);color:var(--ink);padding:4px 6px;outline:none;border-radius:2px;" onchange="onHistoriqueChange()">
+              <option value="">— Aucun (optionnel) —</option>
+            </select>
+          </div>
+          <div id="historique-description" style="font-family:'IM Fell English',serif;font-size:11px;color:var(--ink2);font-style:italic;padding:6px;background:rgba(80,45,5,0.06);border-left:2px solid var(--border);border-radius:2px;min-height:40px;"></div>
+        </div>
+        <div id="historique-details" style="display:none;">
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:3px;">Coût XP</div>
+          <div id="historique-cout" style="font-size:13px;font-family:'Cinzel',serif;font-weight:700;color:var(--rust);margin-bottom:6px;"></div>
+          <div style="font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--label-color);text-transform:uppercase;margin-bottom:3px;">Effets</div>
+          <div id="historique-effets" style="font-size:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 5 : DIVINATION -->
+    <div class="creation-step" id="step-5" style="display:none;">
+      <div class="section-title">Étape 5 — Divination (1d100)</div>
+      <div style="margin:8px 0;">
+        <button onclick="rollDivination()" class="cr-btn cr-btn-gold">🎲 Tirer la divination</button>
+        <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--sublabel-color);margin-left:8px;">ou saisissez :</span>
+        <input type="number" id="roll-divination" min="1" max="100" style="width:55px;font-family:'Cinzel',serif;font-size:12px;border:1px solid var(--border);background:var(--input-bg);color:var(--ink);text-align:center;padding:3px;outline:none;" onchange="applyDivination()">
+      </div>
+      <div id="divination-result" style="display:none;padding:10px;background:rgba(80,45,5,0.08);border:1px solid var(--border);border-radius:3px;">
+        <div id="div-citation" style="font-family:'IM Fell English',serif;font-size:13px;font-style:italic;color:var(--ink2);margin-bottom:6px;"></div>
+        <div id="div-effet" style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:var(--rust);"></div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 6 : DÉPENSE XP -->
+    <div class="creation-step" id="step-6" style="display:none;">
+      <div class="section-title">Étape 6 — Dépense des points d'expérience</div>
+      <div style="display:flex;align-items:center;gap:10px;margin:8px 0;">
+        <div class="field-group">
+          <label>XP disponibles au départ</label>
+          <input type="number" id="xp-creation-total" value="400" style="width:90px;font-family:'Cinzel',serif;font-size:16px;font-weight:700;border:1.5px solid var(--border);background:var(--input-bg);color:var(--ink);text-align:center;padding:3px;outline:none;" oninput="updateXPDisplay()">
+        </div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--sublabel-color);">→</div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--label-color);">XP restants : <span id="xp-restants" style="font-size:18px;font-weight:700;color:var(--rust);">400</span></div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--label-color);">XP dépensés : <span id="xp-depenses-display" style="font-size:18px;font-weight:700;color:var(--gold);">0</span></div>
+      </div>
+      <div id="promotions-container" style="margin-top:6px;"></div>
+    </div>
+
+    <!-- ÉTAPE 7 : TRANSFERT -->
+    <div class="creation-step" id="step-7" style="display:none;">
+      <div class="section-title">Étape 7 — Récapitulatif & Transfert</div>
+      <div id="recap-content" style="margin-top:8px;"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;">
+        <button onclick="transferToSheet()" class="cr-btn cr-btn-green" style="font-size:11px;padding:8px 20px;">
+          ✅ Transférer vers la fiche
+        </button>
+        <button onclick="exportCreationJSON()" class="cr-btn" style="font-size:11px;padding:8px 20px;">
+          💾 Exporter en JSON
+        </button>
+      </div>
+    </div>
+
+  </div><!-- fin creation-content -->
+
+  <!-- NAVIGATION -->
+  <div id="creation-nav" style="display:none;justify-content:space-between;align-items:center;margin-top:12px;padding-top:8px;border-top:1px solid var(--border);">
+    <button id="btn-prev" onclick="prevStep()" class="cr-btn" style="visibility:hidden;">← Précédent</button>
+    <span id="step-indicator" style="font-family:'Cinzel',serif;font-size:9px;color:var(--sublabel-color);"></span>
+    <button id="btn-next" onclick="nextStep()" class="cr-btn cr-btn-gold">Suivant →</button>
+  </div>
+
+  <div class="footer-note">Photocopie autorisée pour un usage strictement privé. © Games Workshop Ltd 2010.</div>
+</div>
+
+<style>
+.creation-step {}
+.cr-btn {
+  font-family:'Cinzel',serif;font-size:8.5px;font-weight:700;
+  border:1.5px solid var(--border);background:var(--input-bg);
+  color:var(--ink);padding:5px 12px;border-radius:2px;cursor:pointer;
+  text-transform:uppercase;letter-spacing:1px;
+}
+.cr-btn:hover { background:var(--parchment2); }
+.cr-btn-gold { border-color:var(--gold);color:var(--gold2);background:rgba(154,120,48,0.12); }
+.cr-btn-gold:hover { background:rgba(154,120,48,0.25); }
+.cr-btn-green { border-color:#3a6a3a;color:#2a4a2a;background:rgba(50,100,50,0.12); }
+.cr-btn-green:hover { background:rgba(50,100,50,0.25); }
+.promo-item {
+  display:flex;align-items:center;gap:6px;padding:3px 5px;
+  border-radius:2px;margin-bottom:2px;font-family:'IM Fell English',serif;font-size:10px;
+}
+.promo-item:nth-child(even) { background:rgba(80,45,5,0.05); }
+.promo-item.disabled { opacity:0.4; }
+.promo-item input[type=checkbox] { accent-color:var(--rust);flex-shrink:0; }
+.promo-tag { font-family:'Cinzel',serif;font-size:7px;font-weight:700;padding:1px 4px;border-radius:2px; }
+.promo-tag-C { background:rgba(50,70,150,0.15);color:#2a3a8a; }
+.promo-tag-T { background:rgba(122,37,16,0.15);color:var(--rust); }
+.promo-cout { font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:var(--sublabel-color);margin-left:auto;flex-shrink:0; }
+.promo-ok { color:#2a6a2a; }
+.promo-nok { color:#7a2510; }
+.rang-header {
+  font-family:'Cinzel',serif;font-size:10px;font-weight:700;
+  color:var(--ink2);border-bottom:1.5px solid var(--border);
+  padding:4px 0;margin:8px 0 4px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+@media print {
+  #page3 { display:none !important; }
+}
+</style>
+
+<script>
+// ================================================
+// PAGE 3 — CRÉATION DE PERSONNAGE
+// ================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbz8gdyzEHpgjoAgPLK9ej61YSHAb4xC4sjEkU3kWJW-Iq4fjM3t5lxUzJ7TOOZsnyWQOw/exec';
+
+// Compteur pour callbacks JSONP uniques
+let _jsonpCounter = 0;
+
+// Appel API via JSONP — contourne les restrictions CORS d'Apps Script
+function apiCall(params) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_dhcb' + (++_jsonpCounter);
+    console.log('apiCall:', params, '→ callback:', cbName);
+
+    const timeout = setTimeout(() => {
+      console.error('apiCall TIMEOUT pour', params);
+      delete window[cbName];
+      reject(new Error('Timeout API'));
+    }, 15000);
+
+    window[cbName] = function(data) {
+      console.log('apiCall réponse reçue pour', params, ':', data);
+      clearTimeout(timeout);
+      delete window[cbName];
+      script.remove();
+      resolve(data);
+    };
+
+    const qs = new URLSearchParams({...params, callback: cbName}).toString();
+    const url = API_URL + '?' + qs;
+    console.log('apiCall URL:', url);
+    const script = document.createElement('script');
+    script.src = url;
+    script.onerror = (e) => {
+      console.error('apiCall script.onerror:', e);
+      clearTimeout(timeout);
+      delete window[cbName];
+      reject(new Error('Erreur chargement script'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+const CARAC_KEYS = ['CC','CT','F','E','Ag','Int','Per','FM','Soc'];
+
+// État de création
+const creation = {
+  step: 1,
+  totalSteps: 7,
+  monde: null,
+  mondeDetail: null,
+  carriere: null,
+  carriereDetail: null,
+  historique: null,
+  divination: null,
+  origineRoll: null,
+  caracs: {},
+  xpTotal: 400,
+  xpDepenses: 0,
+  achats: [], // {nom, type, niveau, cout}
+  promotions: [],
+};
+
+// ------------------------------------------------
+// INIT — charge les données au chargement
+// ------------------------------------------------
+async function initCreation() {
+  try {
+    const mondes = await apiCall({action:'mondes'});
+
+    const sel = document.getElementById('sel-monde');
+    mondes.forEach(m => {
+      sel.appendChild(new Option(m.nom, m.id));
+    });
+
+    document.getElementById('creation-loading').style.display = 'none';
+    document.getElementById('creation-content').style.display = 'block';
+    document.getElementById('creation-nav').style.display = 'flex';
+
+    buildStepsBar();
+    updateNav();
+    setTimeout(bindStepButtons, 100);
+  } catch(e) {
+    console.error('initCreation erreur:', e);
+    document.getElementById('creation-loading').innerHTML =
+      '<span style="color:var(--rust);">⚠ Impossible de contacter la base de données. Vérifiez votre connexion.<br><small>' + e.message + '</small></span>';
+  }
+}
+
+// ------------------------------------------------
+// BARRE DE PROGRESSION
+// ------------------------------------------------
+const STEP_LABELS = ['Origine','Caractéristiques','Carrière','Historique','Divination','XP','Transfert'];
+
+function buildStepsBar() {
+  const bar = document.getElementById('creation-steps');
+  STEP_LABELS.forEach((lbl, i) => {
+    const btn = document.createElement('button');
+    btn.id = 'step-btn-' + (i+1);
+    btn.textContent = (i+1) + '. ' + lbl;
+    btn.style.cssText = `flex:1;font-family:'Cinzel',serif;font-size:8px;font-weight:700;
+      text-transform:uppercase;letter-spacing:0.5px;border:none;border-right:1px solid var(--border);
+      padding:6px 2px;cursor:pointer;background:var(--parchment2);color:var(--sublabel-color);`;
+    btn.addEventListener('click', () => goToStep(i+1));
+    bar.appendChild(btn);
+  });
+  highlightStep(1);
+}
+
+function highlightStep(n) {
+  STEP_LABELS.forEach((_, i) => {
+    const btn = document.getElementById('step-btn-' + (i+1));
+    if (!btn) return;
+    if (i+1 === n) {
+      btn.style.background = 'var(--parchment3)';
+      btn.style.color = 'var(--ink)';
+    } else if (i+1 < n) {
+      btn.style.background = 'rgba(50,100,50,0.15)';
+      btn.style.color = '#2a4a2a';
+    } else {
+      btn.style.background = 'var(--parchment2)';
+      btn.style.color = 'var(--sublabel-color)';
+    }
+  });
+}
+
+// ------------------------------------------------
+// NAVIGATION
+// ------------------------------------------------
+function goToStep(n) {
+  document.getElementById('step-' + creation.step).style.display = 'none';
+  creation.step = n;
+  document.getElementById('step-' + n).style.display = 'block';
+  highlightStep(n);
+  updateNav();
+  if (n === 6) loadPromotions();
+  if (n === 7) buildRecap();
+}
+
+function nextStep() { if (creation.step < creation.totalSteps) goToStep(creation.step + 1); }
+function prevStep() { if (creation.step > 1) goToStep(creation.step - 1); }
+
+function updateNav() {
+  document.getElementById('btn-prev').style.visibility = creation.step > 1 ? 'visible' : 'hidden';
+  document.getElementById('btn-next').style.display = creation.step < creation.totalSteps ? 'inline-block' : 'none';
+  document.getElementById('step-indicator').textContent = 'Étape ' + creation.step + ' / ' + creation.totalSteps;
+}
+
+// ------------------------------------------------
+// ÉTAPE 1 — MONDE NATAL
+// ------------------------------------------------
+document.getElementById('sel-monde').addEventListener('change', async function() {
+  const id = this.value;
+  if (!id) return;
+
+  creation.monde = id;
+  const detail = await apiCall({action:'monde_detail', id:id});
+  creation.mondeDetail = detail;
+
+  document.getElementById('monde-description').textContent = detail.description || '';
+  document.getElementById('monde-details').style.display = 'block';
+
+  // Traits
+  const traitsEl = document.getElementById('monde-traits');
+  traitsEl.innerHTML = detail.traits.map(t =>
+    `<div style="margin-bottom:3px;padding:3px 5px;background:rgba(80,45,5,0.06);border-radius:2px;">
+      <strong style="font-family:'Cinzel',serif;font-size:9px;">${t.Trait_nom}</strong>
+      <span style="color:var(--rust);font-weight:700;"> ${t.Valeur}</span>
+      <span style="color:var(--sublabel-color);font-size:9px;"> — ${t.Description}</span>
+    </div>`
+  ).join('');
+
+  // Compétences innées
+  document.getElementById('monde-competences').innerHTML = detail.competences_innees.length
+    ? detail.competences_innees.map(c => `<span style="display:inline-block;margin:1px 3px 1px 0;padding:1px 5px;background:rgba(50,70,150,0.12);border-radius:2px;font-size:9px;">${c}</span>`).join('')
+    : '<em style="color:var(--sublabel-color);font-size:9px;">Aucune</em>';
+
+  // Bonus caractéristiques
+  const cb = detail.carac_bonus || {};
+  const CARAC_LABELS = {CC:'CC',CT:'CT',F:'F',E:'E',Ag:'Ag',Int:'Int',Per:'Per',FM:'FM',Soc:'Soc'};
+  document.getElementById('monde-carac-bonus').innerHTML = Object.entries(cb).map(([k,v]) =>
+    `<span style="display:inline-block;margin:1px 3px 1px 0;padding:1px 6px;background:${v>20?'rgba(50,120,50,0.15)':v<20?'rgba(150,50,20,0.12)':'rgba(80,45,5,0.08)'};border-radius:2px;font-size:9px;font-family:'Cinzel',serif;">
+      ${k}: <strong>${v}</strong>${v>20?' ▲':v<20?' ▼':''}
+    </span>`
+  ).join('');
+
+  // Blessures
+  document.getElementById('blessures-section').style.display = 'block';
+  document.getElementById('bless-formule-display').textContent = detail.blessures_formule;
+  creation._blessuresFormule = detail.blessures_formule;
+
+  // Table Destin
+  document.getElementById('destin-section').style.display = 'block';
+  const destTable = document.getElementById('destin-table');
+  destTable.innerHTML = `<thead><tr>
+    <th style="font-family:'Cinzel',serif;font-size:7px;color:var(--label-color);border-bottom:1px solid var(--border);padding:2px 4px;text-align:left;">Résultat d10</th>
+    <th style="font-family:'Cinzel',serif;font-size:7px;color:var(--label-color);border-bottom:1px solid var(--border);padding:2px 4px;text-align:center;">Points de Destin</th>
+  </tr></thead><tbody>` +
+  detail.destin.map((d,i) =>
+    `<tr style="${i%2?'background:rgba(80,45,5,0.05)':''}">
+      <td style="padding:2px 6px;font-size:9px;font-weight:700;">${d.de === d.a ? d.de : d.de + ' – ' + d.a}</td>
+      <td style="padding:2px 6px;font-size:11px;font-weight:700;text-align:center;color:var(--rust);">${d.valeur}</td>
+    </tr>`
+  ).join('') + '</tbody>';
+
+  // Lieu d'origine
+  document.getElementById('origine-section').style.display = 'block';
+
+  // Pré-remplir carrières
+  loadCarrieres(id);
+});
+
+function applyBlessures() {
+  const roll = parseInt(document.getElementById('bless-creation-roll').value);
+  if (isNaN(roll) || !creation._blessuresFormule) return;
+  const match = creation._blessuresFormule.match(/\d+d(\d+)\+(\d+)/);
+  if (!match) return;
+  const bonus = parseInt(match[2]);
+  const total = roll + bonus;
+  document.getElementById('bless-total-display').textContent = total;
+  creation._blessuresTotal = total;
+  // Reporter en page 2
+  const blessEl = document.getElementById('bless-total');
+  if (blessEl) blessEl.value = total;
+}
+
+function applyDestin() {
+  const roll = parseInt(document.getElementById('destin-creation-roll').value);
+  if (isNaN(roll) || !creation.mondeDetail?.destin) return;
+  const found = creation.mondeDetail.destin.find(d => roll >= d.de && roll <= d.a);
+  if (!found) return;
+  creation._destinTotal = found.valeur;
+  document.getElementById('destin-total-display').textContent = found.valeur;
+  // Reporter en page 1 (Points de Destin → Actuels)
+  const destAct = document.querySelectorAll('.big-num-input');
+  // chercher le champ "Actuels" de Destin p1
+  document.querySelectorAll('#page1 .big-num-input').forEach(el => {
+    const label = el.previousElementSibling;
+    if (label && label.textContent.includes('Actuels')) el.value = found.valeur;
+  });
+}
+
+function rollOrigine() {
+  const roll = Math.floor(Math.random() * 100) + 1;
+  document.getElementById('roll-origine').value = roll;
+  applyOrigine();
+}
+
+function applyOrigine() {
+  const roll = parseInt(document.getElementById('roll-origine').value);
+  if (!creation.mondeDetail || isNaN(roll)) return;
+  const found = creation.mondeDetail.origines.find(o => roll >= o.de && roll <= o.a);
+  if (!found) return;
+  creation.origineRoll = found;
+  const el = document.getElementById('origine-result');
+  el.style.display = 'block';
+  el.innerHTML = `<strong style="font-family:'Cinzel',serif;font-size:10px;">Jet ${roll} — ${found.nom}</strong><br>
+    <span style="font-size:10px;color:var(--ink2);">${found.effet_detail}</span>`;
+}
+
+// ------------------------------------------------
+// ÉTAPE 2 — CARACTÉRISTIQUES
+// ------------------------------------------------
+function buildCaracCreationGrid() {
+  const grid = document.getElementById('carac-creation-grid');
+  grid.innerHTML = '';
+  const bonus = creation.mondeDetail ? creation.mondeDetail.carac_bonus : {};
+
+  CARAC_KEYS.forEach(k => {
+    const b = bonus[k] || 20;
+    // Initialiser avec le bonus de base si pas encore de valeur
+    if (!creation.caracs[k]) creation.caracs[k] = b;
+
+    const cell = document.createElement('div');
+    cell.style.cssText = 'background:rgba(80,45,5,0.06);border:1px solid var(--border2);border-radius:3px;padding:6px;';
+    cell.innerHTML = `
+      <div style="font-family:'Cinzel',serif;font-size:9px;font-weight:700;color:var(--label-color);margin-bottom:3px;">
+        ${k} <span style="font-weight:400;color:var(--sublabel-color);">(2d10+${b})</span>
+      </div>
+      <input type="number" id="carac-cr-${k}" value="${creation.caracs[k]}" min="1" max="99"
+        style="width:100%;font-family:'Cinzel',serif;font-size:18px;font-weight:700;
+        border:1.5px solid var(--border);background:var(--input-bg);color:var(--ink);
+        text-align:center;padding:4px;outline:none;"
+        onchange="creation.caracs['${k}']=parseInt(this.value)||${b}; applyCaracsToSheet();">`;
+    grid.appendChild(cell);
+  });
+}
+
+// Applique les carac en temps réel sur la fiche dès l'étape 2
+function applyCaracsToSheet() {
+  const charMap = {CC:'cc',CT:'ct',F:'f',E:'e',Ag:'ag',Int:'int',Per:'per',FM:'fm',Soc:'soc'};
+  Object.entries(charMap).forEach(([short, id]) => {
+    const val = creation.caracs[short];
+    if (val) {
+      charBase[id] = val;
+      document.querySelectorAll('[id^="char-' + id + '-"]').forEach(el => { el.value = val; });
+    }
+  });
+  updateAll();
+}
+
+// Reconstruire la grille quand on arrive à l'étape 2
+const _origGoToStep = goToStep;
+
+// ------------------------------------------------
+// ÉTAPE 3 — PLAN DE CARRIÈRE
+// ------------------------------------------------
+async function loadCarrieres(mondeId) {
+  const carrieres = await apiCall({action:'carrieres', monde_id:mondeId});
+  const sel = document.getElementById('sel-carriere');
+  sel.innerHTML = '<option value="">— Sélectionner —</option>';
+  carrieres.forEach(c => sel.appendChild(new Option(c.nom, c.id)));
+}
+
+async function onCarriereChange() {
+  const id = document.getElementById('sel-carriere').value;
+  if (!id) return;
+  creation.carriere = id;
+  const detail = await apiCall({action:'carriere_detail', id:id});
+  creation.carriereDetail = detail;
+
+  document.getElementById('carriere-description').textContent = detail.description || '';
+  document.getElementById('carriere-details').style.display = 'block';
+
+  const tag = items => items.length
+    ? items.map(i => `<span style="display:inline-block;margin:1px 3px 1px 0;padding:1px 5px;background:rgba(80,45,5,0.08);border-radius:2px;font-size:9px;">${i}</span>`).join('')
+    : '<em style="color:var(--sublabel-color);font-size:9px;">Aucun</em>';
+
+  document.getElementById('carriere-competences').innerHTML = tag(detail.competences_depart);
+  document.getElementById('carriere-talents').innerHTML = tag(detail.talents_depart);
+  document.getElementById('carriere-equipement').innerHTML = tag(detail.equipement_depart);
+  document.getElementById('carriere-promotion').textContent = detail.promotion_depart;
+
+  // Charger les historiques
+  loadHistoriques(id, creation.monde);
+}
+
+// ------------------------------------------------
+// ÉTAPE 4 — HISTORIQUE
+// ------------------------------------------------
+async function loadHistoriques(carriereId, mondeId) {
+  const params = {action: 'historiques', carriere_id: carriereId};
+  if (mondeId) params.monde_id = mondeId;
+  const historiques = await apiCall(params);
+  const sel = document.getElementById('sel-historique');
+  sel.innerHTML = '<option value="">— Aucun (optionnel) —</option>';
+  if (!Array.isArray(historiques)) return;
+  historiques.forEach(h => {
+    const label = h.nom + (h.cout_xp > 0 ? ' (' + h.cout_xp + ' xp)' : '');
+    const opt = new Option(label, h.id);
+    opt.dataset.json = JSON.stringify(h);
+    sel.appendChild(opt);
+  });
+}
+
+function onHistoriqueChange() {
+  const sel = document.getElementById('sel-historique');
+  const opt = sel.selectedOptions[0];
+  if (!opt || !opt.dataset.json) {
+    document.getElementById('historique-details').style.display = 'none';
+    // Retirer l'ancien coût historique des achats
+    creation.achats = creation.achats.filter(a => a.type !== 'H');
+    creation.historique = null;
+    updateXPDisplay();
+    return;
+  }
+  const h = JSON.parse(opt.dataset.json);
+
+  // Retirer ancien historique des achats
+  creation.achats = creation.achats.filter(a => a.type !== 'H');
+
+  // Ajouter le coût de l'historique comme achat spécial
+  if (h.cout_xp > 0) {
+    creation.achats.push({nom: h.nom, niveau: '(historique)', type: 'H', cout: h.cout_xp});
+  }
+  creation.historique = h;
+
+  document.getElementById('historique-description').textContent = h.description;
+  document.getElementById('historique-details').style.display = 'block';
+  document.getElementById('historique-cout').textContent = h.cout_xp > 0 ? h.cout_xp + ' XP' : 'Gratuit';
+
+  let effets = '';
+  if (h.carac_modif) effets += `<div style="margin-bottom:3px;">📊 <strong>${h.carac_modif}</strong> : ${h.carac_val}</div>`;
+  if (h.competences.length) effets += `<div style="margin-bottom:3px;">📚 Compétences : ${h.competences.map(c=>`<span style="padding:1px 4px;background:rgba(50,70,150,0.1);border-radius:2px;">${c}</span>`).join(' ')}</div>`;
+  if (h.talents.length) effets += `<div style="margin-bottom:3px;">⚔ Talents : ${h.talents.map(t=>`<span style="padding:1px 4px;background:rgba(122,37,16,0.1);border-radius:2px;">${t}</span>`).join(' ')}</div>`;
+  if (h.points_speciaux) {
+    effets += `<div style="margin-top:4px;padding:5px;background:rgba(122,37,16,0.10);border-left:2px solid var(--rust);border-radius:2px;color:var(--rust);font-weight:700;">⚠ ${h.points_speciaux}</div>`;
+  }
+  document.getElementById('historique-effets').innerHTML = effets || '<em>Aucun effet spécial</em>';
+  updateXPDisplay();
+}
+
+// ------------------------------------------------
+// ÉTAPE 5 — DIVINATION
+// ------------------------------------------------
+function rollDivination() {
+  const roll = Math.floor(Math.random() * 100) + 1;
+  document.getElementById('roll-divination').value = roll;
+  applyDivination();
+}
+
+async function applyDivination() {
+  const roll = parseInt(document.getElementById('roll-divination').value);
+  if (isNaN(roll)) return;
+  const div = await apiCall({action:'divination', roll:roll});
+  creation.divination = div;
+
+  document.getElementById('divination-result').style.display = 'block';
+  document.getElementById('div-citation').textContent = '« ' + div.citation + ' »';
+
+  let effet = '';
+  if (div.effet_type === 'bonus_carac') effet = `${div.cible} : ${div.valeur}`;
+  else if (div.effet_type === 'bonus_blessures') effet = `+${div.valeur} Point(s) de Blessures`;
+  else if (div.effet_type === 'bonus_destin') effet = `+${div.valeur} Point(s) de Destin`;
+  else if (div.effet_type === 'talent') effet = `Talent : ${div.valeur}`;
+  else if (div.effet_type === 'corruption') effet = `${div.valeur} Point(s) de Corruption`;
+  else if (div.effet_type === 'folie') effet = `${div.valeur} Point(s) de Folie`;
+  else effet = div.notes || div.valeur;
+  if (div.notes) effet += ' — ' + div.notes;
+
+  document.getElementById('div-effet').textContent = effet;
+}
+
+// ------------------------------------------------
+// ÉTAPE 6 — DÉPENSE XP
+// ------------------------------------------------
+let promotionsData = [];
+
+async function loadPromotions() {
+  if (!creation.carriere) return;
+  const container = document.getElementById('promotions-container');
+  container.innerHTML = '<div style="font-family:\'Cinzel\',serif;font-size:10px;color:var(--sublabel-color);">Chargement...</div>';
+
+  promotionsData = await apiCall({action:'promotions', carriere_id:creation.carriere});
+  creation.xpTotal = parseInt(document.getElementById('xp-creation-total').value) || 400;
+
+  renderPromotions();
+}
+
+function updateXPDisplay() {
+  creation.xpTotal = parseInt(document.getElementById('xp-creation-total').value) || 0;
+  const depenses = creation.achats.reduce((s, a) => s + a.cout, 0);
+  creation.xpDepenses = depenses;
+  document.getElementById('xp-restants').textContent = creation.xpTotal - depenses;
+  document.getElementById('xp-depenses-display').textContent = depenses;
+}
+
+function renderPromotions() {
+  const container = document.getElementById('promotions-container');
+  container.innerHTML = '';
+
+  promotionsData.forEach(rang => {
+    const rangDiv = document.createElement('div');
+    rangDiv.style.marginBottom = '10px';
+
+    const header = document.createElement('div');
+    header.className = 'rang-header';
+    header.innerHTML = `<span>Rang ${rang.rang} — ${rang.nom_rang}</span>
+      <span style="font-size:9px;color:var(--sublabel-color);">${rang.xp_min} – ${rang.xp_max} XP</span>`;
+    rangDiv.appendChild(header);
+
+    rang.ameliorations.forEach(am => {
+      const prereqOk = checkPrereq(am.prerequis);
+      const dejaAchete = creation.achats.some(a => a.nom === am.nom && a.niveau === am.niveau);
+
+      const item = document.createElement('div');
+      item.className = 'promo-item' + (!prereqOk ? ' disabled' : '');
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = dejaAchete;
+      cb.disabled = !prereqOk;
+      cb.addEventListener('change', () => {
+        if (cb.checked) {
+          const xpLeft = creation.xpTotal - creation.achats.reduce((s,a)=>s+a.cout,0);
+          if (am.cout_xp > xpLeft) {
+            cb.checked = false;
+            alert('XP insuffisants (' + xpLeft + ' restants, ' + am.cout_xp + ' requis)');
+            return;
+          }
+          creation.achats.push({nom: am.nom, niveau: am.niveau, type: am.type, cout: am.cout_xp});
+        } else {
+          const idx = creation.achats.findIndex(a => a.nom === am.nom && a.niveau === am.niveau);
+          if (idx > -1) creation.achats.splice(idx, 1);
+        }
+        updateXPDisplay();
+      });
+
+      item.appendChild(cb);
+      item.innerHTML += `
+        <span class="promo-tag promo-tag-${am.type}">${am.type === 'C' ? 'Comp.' : 'Talent'}</span>
+        <span style="flex:1;">${am.nom}${am.niveau ? ' <em style="color:var(--sublabel-color);">' + am.niveau + '</em>' : ''}</span>
+        ${am.prerequis ? `<span style="font-size:8px;color:var(--sublabel-color);" title="${am.prerequis}">${prereqOk ? '✓' : '✗'}</span>` : ''}
+        <span class="promo-cout">${am.cout_xp} xp</span>`;
+      item.insertBefore(cb, item.firstChild);
+
+      rangDiv.appendChild(item);
+    });
+
+    container.appendChild(rangDiv);
+  });
+
+  updateXPDisplay();
+}
+
+function checkPrereq(prereq) {
+  if (!prereq || prereq.trim() === '' || prereq.trim() === '—') return true;
+
+  const parts = prereq.split('|').map(p => p.trim()).filter(Boolean);
+  return parts.every(p => {
+    // Prérequis carac : "CC 35", "Int 30", etc.
+    const caracMatch = p.match(/^([A-Za-zÀ-ÿ]+)\s+(\d+)$/);
+    if (caracMatch) {
+      const key = caracMatch[1], val = parseInt(caracMatch[2]);
+      const charVal = creation.caracs[key] || 0;
+      return charVal >= val;
+    }
+
+    // Prérequis "Technoprêtre" = vrai si on a cette carrière
+    if (creation.carriereDetail && p.toLowerCase() === creation.carriereDetail.nom.toLowerCase()) return true;
+
+    // Prérequis talent/compétence de départ de la carrière
+    if (creation.carriereDetail) {
+      const depart = [
+        ...(creation.carriereDetail.competences_depart || []),
+        ...(creation.carriereDetail.talents_depart || []),
+      ];
+      if (depart.some(d => d.toLowerCase().includes(p.toLowerCase().substring(0,10)))) return true;
+    }
+
+    // Prérequis dans les achats déjà effectués
+    if (creation.achats.some(a => {
+      const nomComplet = a.nom + (a.niveau ? ' ' + a.niveau : '');
+      return nomComplet.toLowerCase().includes(p.toLowerCase().substring(0,10));
+    })) return true;
+
+    // Si le prérequis contient "Formation" — débloqué si on a la formation de base
+    if (p.includes('Formation')) {
+      const base = p.replace(/\+\d+/, '').trim();
+      return creation.achats.some(a => a.nom.toLowerCase().includes(base.toLowerCase().substring(0,15)));
+    }
+
+    return false;
+  });
+}
+
+// ------------------------------------------------
+// ÉTAPE 7 — RÉCAPITULATIF
+// ------------------------------------------------
+function buildRecap() {
+  const el = document.getElementById('recap-content');
+  const m = creation.mondeDetail;
+  const c = creation.carriereDetail;
+  const h = creation.historique;
+  const div = creation.divination;
+
+  let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">`;
+
+  // Colonne gauche
+  html += `<div>
+    <div class="section-title" style="font-size:9px;">Identité</div>
+    <table style="width:100%;font-size:10px;border-collapse:collapse;">
+      <tr><td style="font-family:'Cinzel',serif;font-size:8px;color:var(--label-color);padding:2px 4px;">Origine</td><td style="padding:2px 4px;font-weight:700;">${m ? m.nom : '—'}</td></tr>
+      <tr style="background:rgba(80,45,5,0.05);"><td style="font-family:'Cinzel',serif;font-size:8px;color:var(--label-color);padding:2px 4px;">Lieu</td><td style="padding:2px 4px;">${creation.origineRoll ? creation.origineRoll.nom : '—'}</td></tr>
+      <tr><td style="font-family:'Cinzel',serif;font-size:8px;color:var(--label-color);padding:2px 4px;">Carrière</td><td style="padding:2px 4px;font-weight:700;">${c ? c.nom : '—'}</td></tr>
+      <tr style="background:rgba(80,45,5,0.05);"><td style="font-family:'Cinzel',serif;font-size:8px;color:var(--label-color);padding:2px 4px;">Historique</td><td style="padding:2px 4px;">${h ? h.nom : 'Aucun'}</td></tr>
+      <tr><td style="font-family:'Cinzel',serif;font-size:8px;color:var(--label-color);padding:2px 4px;">Divination</td><td style="padding:2px 4px;font-style:italic;">${div ? '«\u00a0' + div.citation.substring(0,50) + '…\u00a0»' : '—'}</td></tr>
+    </table>
+
+    <div class="section-title" style="font-size:9px;margin-top:8px;">Caractéristiques</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;">
+      ${CARAC_KEYS.map(k => `<div style="text-align:center;padding:3px;background:rgba(80,45,5,0.06);border-radius:2px;">
+        <div style="font-family:'Cinzel',serif;font-size:7px;color:var(--label-color);">${k}</div>
+        <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;">${creation.caracs[k] || '—'}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+
+  // Colonne droite
+  const xpDepenses = creation.achats.reduce((s,a)=>s+a.cout,0);
+  html += `<div>
+    <div class="section-title" style="font-size:9px;">Acquisitions (${creation.achats.length} achats — ${xpDepenses} XP)</div>
+    <div style="max-height:200px;overflow-y:auto;font-size:9.5px;">
+      ${creation.achats.length
+        ? creation.achats.map(a => `<div style="padding:2px 4px;border-bottom:1px solid rgba(80,45,5,0.1);">
+            <span class="promo-tag promo-tag-${a.type}">${a.type === 'C' ? 'C' : 'T'}</span>
+            ${a.nom} ${a.niveau ? '<em>' + a.niveau + '</em>' : ''} — <strong>${a.cout} xp</strong>
+          </div>`).join('')
+        : '<em style="color:var(--sublabel-color);">Aucun achat</em>'}
+    </div>
+    <div style="margin-top:8px;font-family:\'Cinzel\',serif;font-size:10px;">
+      XP dépensés : <strong>${xpDepenses}</strong> / <strong>${creation.xpTotal}</strong>
+      <br>XP restants : <strong style="color:var(--rust);">${creation.xpTotal - xpDepenses}</strong>
+    </div>
+  </div>`;
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ------------------------------------------------
+// TRANSFERT VERS LA FICHE (pages 1 & 2)
+// ------------------------------------------------
+function transferToSheet() {
+  const m = creation.mondeDetail;
+  const c = creation.carriereDetail;
+  const h = creation.historique;
+  const div = creation.divination;
+  const charMap = {CC:'cc',CT:'ct',F:'f',E:'e',Ag:'ag',Int:'int',Per:'per',FM:'fm',Soc:'soc'};
+
+  // 1. Caractéristiques de base tirées
+  if (creation.caracs) {
+    Object.entries(charMap).forEach(([short, id]) => {
+      const val = creation.caracs[short];
+      if (val) {
+        charBase[id] = val;
+        document.querySelectorAll('[id^="char-' + id + '-"]').forEach(el => { el.value = val; });
+      }
+    });
+  }
+
+  // 2. Bonus Adéquat (+3 selon carrière) — appliqué sur charBase
+  if (m?.traits && c) {
+    m.traits.forEach(t => {
+      if (t.Trait_type === 'bonus_carac_selon_carriere') {
+        const cond = t.Condition || '';
+        cond.split('|').forEach(part => {
+          const [nom, carac] = part.split('=').map(s => s.trim());
+          if (nom === c.nom && carac) {
+            const id = charMap[carac];
+            if (id) { charBase[id] = (charBase[id]||0) + 3; }
+          }
+        });
+      }
+    });
+    Object.values(charMap).forEach(id => {
+      document.querySelectorAll('[id^="char-' + id + '-"]').forEach(el => { el.value = charBase[id] || 0; });
+    });
+  }
+
+  // 3. Bonus divination sur les carac
+  if (div?.effet_type === 'bonus_carac') {
+    div.cible.split('+').forEach(cle => {
+      const id = charMap[cle.trim()];
+      if (id) {
+        charBase[id] = (charBase[id]||0) + (parseInt(div.valeur)||0);
+        document.querySelectorAll('[id^="char-' + id + '-"]').forEach(el => { el.value = charBase[id]; });
+      }
+    });
+  }
+
+  updateAll();
+
+  // 4. Champs identité cartouche
+  if (m) { const el=document.getElementById('monde');    if(el) el.value=m.nom; }
+  if (c) {
+    const el=document.getElementById('carriere');        if(el) el.value=c.nom;
+    const pr=document.getElementById('promo');           if(pr) pr.value='1';
+  }
+  if (h) { const el=document.getElementById('historique'); if(el) el.value=h.nom; }
+  if (div?.citation) { const el=document.getElementById('divination'); if(el) el.value='«\u00a0'+div.citation+'\u00a0»'; }
+
+  // 5. Talents innés + départ + historique → zone Talents page 1
+  const allTalents = [];
+  if (m?.traits) m.traits.filter(t=>t.Trait_type==='talent').forEach(t=>allTalents.push(t.Valeur));
+  if (c?.talents_depart) allTalents.push(...c.talents_depart.filter(t=>!t.includes('Formation aux armes')));
+  if (h?.talents?.length) allTalents.push(...h.talents.filter(t=>!t.includes('Formation aux armes')));
+  const talentsBox = document.getElementById('talents-box');
+  if (talentsBox && allTalents.length) {
+    const inputs = talentsBox.querySelectorAll('input[type=text]');
+    allTalents.forEach((tal,i) => { if(inputs[i]) inputs[i].value=tal; });
+  }
+
+  // 6. Traits innés → zone Traits page 1
+  const allTraits = [];
+  if (m?.traits) m.traits.filter(t=>t.Trait_type!=='talent'&&t.Trait_type!=='malus_carac'&&t.Trait_type!=='malus_competence').forEach(t=>allTraits.push(t.Trait_nom+' : '+t.Valeur));
+  if (c?.trait_depart) allTraits.push(c.trait_depart);
+  const traitsBox = document.getElementById('traits-box');
+  if (traitsBox && allTraits.length) {
+    const inputs = traitsBox.querySelectorAll('input[type=text]');
+    allTraits.forEach((tr,i) => { if(inputs[i]) inputs[i].value=tr; });
+  }
+
+  // 7. COMPÉTENCES — cocher dans le tableau de compétences page 1
+  // Collecter toutes les compétences avec leur niveau
+  const allComps = []; // {nom, niveau: 'base'|'forme', malus?}
+
+  // Monde natal : compétences innées → base
+  if (m?.competences_innees) m.competences_innees.forEach(n => allComps.push({nom:n, niveau:'base'}));
+
+  // Monde natal : malus compétences (ex: -10 Credo impérial)
+  if (m?.traits) m.traits.filter(t=>t.Trait_type==='malus_competence').forEach(t =>
+    allComps.push({nom:t.Cible, niveau:'base', malus: parseInt(t.Valeur)||0})
+  );
+
+  // Carrière : compétences de départ → formé
+  if (c?.competences_depart) c.competences_depart.forEach(n => allComps.push({nom:n, niveau:'forme'}));
+
+  // Historique : compétences → formé
+  if (h?.competences?.length) h.competences.forEach(n => allComps.push({nom:n, niveau:'forme'}));
+
+  // Achats XP : compétences achetées
+  creation.achats.filter(a=>a.type==='C').forEach(a => {
+    const niveau = a.niveau==='+10'?'p10': a.niveau==='+20'?'p20':'forme';
+    allComps.push({nom:a.nom, niveau});
+  });
+
+  // Appliquer dans skillRows
+  allComps.forEach(comp => {
+    const nomRecherche = comp.nom.toLowerCase().replace(/\s*\(.*\)/g,'').trim();
+    skillRows.forEach((sd, i) => {
+      // Trouver la ligne par son _nameEl ou son texte fixe
+      let nomLigne = '';
+      if (sd._nameEl) {
+        nomLigne = (sd._nameEl.value || sd._nameEl.selectedOptions?.[0]?.text || '').toLowerCase();
+      } else if (sd._total) {
+        const row = sd._total.closest?.('.skill-row');
+        if (row) nomLigne = (row.querySelector('.skill-name-cell')?.textContent||'').toLowerCase();
+      }
+
+      const nomComp = nomRecherche.substring(0,12);
+      if (nomLigne.includes(nomComp) && nomComp.length > 3) {
+        // Décocher tout d'abord
+        if (sd._cbs) sd._cbs.forEach((cb,ki) => { if(cb && !cb.disabled){ cb.checked=false; sd[['base','forme','p10','p20'][ki]]=false; }});
+
+        // Cocher le bon niveau
+        const niveauxMap = {base:0, forme:1, p10:2, p20:3};
+        const ki = niveauxMap[comp.niveau] ?? 0;
+        if (sd._cbs?.[ki] && !sd._cbs[ki].disabled) {
+          sd._cbs[ki].checked = true;
+          sd[comp.niveau] = true;
+        } else if (ki===0 && sd._cbs?.[0]?.disabled) {
+          // déjà verrouillée base — ok
+        }
+
+        // Malus dans case bonus
+        if (comp.malus && sd._bonusEl) {
+          sd.bonus = comp.malus;
+          sd._bonusEl.value = comp.malus;
+        }
+
+        updateSkillRow(i);
+      }
+    });
+  });
+
+  // 8. Équipement → zone Équipement page 2
+  if (c?.equipement_depart?.length) {
+    const equipBox = document.getElementById('equip-box');
+    if (equipBox) {
+      const inputs = equipBox.querySelectorAll('input[type=text]');
+      c.equipement_depart.forEach((item,i) => { if(inputs[i]) inputs[i].value=item; });
+    }
+  }
+
+  // 9. XP synchronisés page 1
+  const xpDep = creation.achats.reduce((s,a)=>s+a.cout,0);
+  const xpAvail=document.getElementById('xp-avail'); if(xpAvail) xpAvail.value=creation.xpTotal-xpDep;
+  const xpSpent=document.getElementById('xp-spent'); if(xpSpent) xpSpent.value=xpDep;
+
+  // 10. Blessures → reportées dans bless-total ET dans Points de Blessures page 2
+  if (creation._blessuresTotal) {
+    // Page 1 (bless-total utilisé par l'outil de création de dés)
+    const bt = document.getElementById('bless-total');
+    if (bt) bt.value = creation._blessuresTotal;
+    // Page 2 → Total des Points de Blessures
+    document.querySelectorAll('#page2 .points-block').forEach(block => {
+      if (block.querySelector('.section-title')?.textContent.includes('Blessures')) {
+        const inputs = block.querySelectorAll('input');
+        if (inputs[0]) inputs[0].value = creation._blessuresTotal; // Total
+        if (inputs[1]) inputs[1].value = creation._blessuresTotal; // Actuels
+      }
+    });
+  }
+
+  // 11. Points de Destin → page 1
+  if (creation._destinTotal) {
+    document.querySelectorAll('#page1 .panel').forEach(panel => {
+      if (panel.querySelector('.section-title')?.textContent.includes('Destin')) {
+        const inputs = panel.querySelectorAll('.big-num-input');
+        inputs.forEach(inp => { inp.value = creation._destinTotal; });
+      }
+    });
+  }
+
+  // 12. Formations aux armes → mastery table buttons
+  const allFormations = [];
+  if (c?.talents_depart) c.talents_depart.filter(t=>t.includes('Formation aux armes')).forEach(t=>allFormations.push(t));
+  if (h?.talents) h.talents.filter(t=>t.includes('Formation aux armes')).forEach(t=>allFormations.push(t));
+  creation.achats.filter(a=>a.nom.includes('Formation aux armes')).forEach(a=>allFormations.push(a.nom+(a.niveau?' '+a.niveau:'')));
+
+  const FORMATION_MAP = {
+    'bolts':         {table:'ranged', row:0},
+    'fusion':        {table:'ranged', row:1},
+    'MS':            {table:'ranged', row:2},
+    'plasma':        {table:'ranged', row:3},
+    'lance-flammes': {table:'ranged', row:4},
+    'laser':         {table:'ranged', row:5},
+    'primitives':    {table:'ranged', row:6},
+    'Astartes':      {table:'ranged', row:7},
+    'décharge':      {table:'melee',  row:0},
+    'énergétiques':  {table:'melee',  row:1},
+    'tronçonneuses': {table:'melee',  row:3},
+  };
+
+  allFormations.forEach(f => {
+    Object.entries(FORMATION_MAP).forEach(([key, pos]) => {
+      if (f.toLowerCase().includes(key.toLowerCase())) {
+        const tbl = document.getElementById('mastery-' + pos.table);
+        if (!tbl) return;
+        const rows = tbl.querySelectorAll('tbody tr');
+        if (!rows[pos.row]) return;
+        const btns = rows[pos.row].querySelectorAll('button');
+        let col = 1;
+        if (f.toLowerCase().includes('poing')) col = 0;
+        else if (f.toLowerCase().includes('lourd')) col = 2;
+        if (btns[col]) {
+          btns[col].dataset.active = '1';
+          btns[col].style.background  = 'var(--rust)';
+          btns[col].style.borderColor = 'var(--rust)';
+        }
+      }
+    });
+  });
+
+  // 13. Points spéciaux historique (folie, corruption) → page 2
+  if (h?.points_speciaux) {
+    const ps = h.points_speciaux;
+    const rollFormule = str => {
+      const m = str.match(/(\d+)d(\d+)/i);
+      if (m) { let t=0; for(let i=0;i<+m[1];i++) t+=Math.floor(Math.random()*+m[2])+1; return t; }
+      return parseInt(str)||0;
+    };
+    const folieMatch  = ps.match(/([\dd]+)\s*points?\s*de\s*folie/i);
+    const corrMatch   = ps.match(/([\dd]+)\s*points?\s*de\s*corruption/i);
+    document.querySelectorAll('#page2 .points-block').forEach(block => {
+      const titre = block.querySelector('.section-title')?.textContent || '';
+      if (folieMatch && titre.includes('Folie')) {
+        const inp = block.querySelector('.psub-field input');
+        if (inp) inp.value = rollFormule(folieMatch[1]);
+      }
+      if (corrMatch && titre.includes('Corruption')) {
+        const inp = block.querySelector('.psub-field input');
+        if (inp) inp.value = rollFormule(corrMatch[1]);
+      }
+    });
+  }
+
+  alert('✅ Transfert effectué !\nVérifiez les pages 1 et 2.');
+}
+
+// ------------------------------------------------
+// EXPORT JSON CRÉATION
+// ------------------------------------------------
+function exportCreationJSON() {
+  const fname = 'creation_personnage.json';
+  const blob = new Blob([JSON.stringify(creation, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = fname; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Reconstruire grille carac à l'étape 2 — après buildStepsBar
+function bindStepButtons() {
+  const btn2 = document.getElementById('step-btn-2');
+  if (btn2) btn2.addEventListener('click', buildCaracCreationGrid);
+}
+
+// Init au chargement
+initCreation().then ? initCreation().then(bindStepButtons) : (initCreation(), setTimeout(bindStepButtons, 2000));
+</script>
+</body>
+</html>
