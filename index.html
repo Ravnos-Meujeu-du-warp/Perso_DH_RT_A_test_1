@@ -2228,17 +2228,20 @@ function showStatus(msg, color) {
 
     <!-- ÉTAPE 2 : CARACTÉRISTIQUES -->
     <div class="creation-step" id="step-2" style="display:none;">
-      <div class="section-title">Étape 2 — Caractéristiques (2d10 + bonus d'origine)</div>
-      <div style="margin:8px 0 4px;font-family:'Cinzel',serif;font-size:9px;color:var(--sublabel-color);">
-        Saisissez vos résultats de dés (le bonus d'origine est indiqué entre parenthèses).
+      <div class="section-title">Étape 2 — Caractéristiques</div>
+      <div style="margin:8px 0;padding:8px;background:rgba(80,45,5,0.06);border:1px solid var(--border2);border-radius:3px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;color:var(--label-color);margin-bottom:6px;font-weight:700;">
+          ℹ Utilisez l'outil d'attribution de dés en Page 2 pour placer vos dés sur chaque caractéristique.<br>
+          Les bonus du monde natal sont déjà intégrés dans les cases bonus de l'outil.
+        </div>
+        <div id="carac-creation-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;"></div>
       </div>
-      <div id="carac-creation-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;"></div>
       <!-- VALIDATION ÉTAPE 2 -->
       <div style="margin-top:12px;padding:8px;background:rgba(50,100,50,0.08);border:1.5px solid #3a6a3a;border-radius:3px;">
         <button onclick="validateStep2()" class="cr-btn cr-btn-green" style="font-size:9px;padding:5px 14px;">
-          ✅ Valider et reporter les caractéristiques dans la fiche
+          ✅ Valider et appliquer les bonus supplémentaires (Adéquat, Divination)
         </button>
-        <span id="step2-ok" style="display:none;font-family:'Cinzel',serif;font-size:9px;color:#2a6a2a;margin-left:8px;">✓ Caractéristiques reportées !</span>
+        <span id="step2-ok" style="display:none;font-family:'Cinzel',serif;font-size:9px;color:#2a6a2a;margin-left:8px;">✓ Appliqué !</span>
       </div>
     </div>
 
@@ -2681,42 +2684,50 @@ function applyOrigine() {
 // ------------------------------------------------
 function buildCaracCreationGrid() {
   const grid = document.getElementById('carac-creation-grid');
+  if (!grid) return;
   grid.innerHTML = '';
+  const charMap = {CC:'cc',CT:'ct',F:'f',E:'e',Ag:'ag',Int:'int',Per:'per',FM:'fm',Soc:'soc'};
   const bonus = creation.mondeDetail ? creation.mondeDetail.carac_bonus : {};
   if (!creation.caracsBonus) creation.caracsBonus = {};
 
   CARAC_KEYS.forEach(k => {
     const b = bonus[k] || 20;
     creation.caracsBonus[k] = b;
-    if (!creation.caracs[k]) creation.caracs[k] = 0;
+    const id = charMap[k];
+    const current = getCharTotal(id);
 
     const cell = document.createElement('div');
-    cell.style.cssText = 'background:rgba(80,45,5,0.06);border:1px solid var(--border2);border-radius:3px;padding:6px;';
-    cell.innerHTML = `
-      <div style="font-family:'Cinzel',serif;font-size:9px;font-weight:700;color:var(--label-color);margin-bottom:4px;">${k}</div>
-      <div style="display:flex;align-items:center;gap:3px;">
-        <div style="display:flex;flex-direction:column;align-items:center;">
-          <span style="font-family:'Cinzel',serif;font-size:7px;color:var(--sublabel-color);">2d10</span>
-          <input type="number" id="carac-cr-${k}" value="${creation.caracs[k]||''}" min="2" max="20" placeholder="—"
-            style="width:40px;font-family:'Cinzel',serif;font-size:14px;font-weight:700;
-            border:1.5px solid var(--border);background:var(--input-bg);color:var(--ink);
-            text-align:center;padding:2px;outline:none;"
-            oninput="creation.caracs['${k}']=parseInt(this.value)||0; updateCaracDisplay('${k}');">
-        </div>
-        <span style="font-family:'Cinzel',serif;font-size:10px;color:var(--sublabel-color);">+</span>
-        <div style="display:flex;flex-direction:column;align-items:center;">
-          <span style="font-family:'Cinzel',serif;font-size:7px;color:var(--sublabel-color);">Monde</span>
-          <span style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--gold2);width:24px;text-align:center;">${b}</span>
-        </div>
-        <span style="font-family:'Cinzel',serif;font-size:10px;color:var(--sublabel-color);">=</span>
-        <div style="display:flex;flex-direction:column;align-items:center;">
-          <span style="font-family:'Cinzel',serif;font-size:7px;color:var(--sublabel-color);">Total</span>
-          <span id="carac-total-${k}" style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--rust);width:30px;text-align:center;">—</span>
-        </div>
-      </div>`;
+    cell.style.cssText = 'background:rgba(80,45,5,0.06);border:1px solid var(--border2);border-radius:3px;padding:6px;text-align:center;';
+
+    const lbl = document.createElement('div');
+    lbl.style.cssText = "font-family:'Cinzel',serif;font-size:9px;font-weight:700;color:var(--label-color);margin-bottom:3px;";
+    lbl.textContent = k;
+
+    const val = document.createElement('div');
+    val.id = 'carac-cr-' + k;
+    val.style.cssText = "font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:" + (current > 0 ? 'var(--rust)' : 'var(--sublabel-color)') + ";";
+    val.textContent = current > 0 ? current : '—';
+
+    const bonusLbl = document.createElement('div');
+    bonusLbl.style.cssText = "font-family:'Cinzel',serif;font-size:7.5px;color:var(--gold2);margin-top:2px;";
+    bonusLbl.textContent = 'Bonus monde : +' + b;
+
+    cell.appendChild(lbl); cell.appendChild(val); cell.appendChild(bonusLbl);
     grid.appendChild(cell);
-    if (creation.caracs[k] > 0) updateCaracDisplay(k);
   });
+}
+
+function updateCaracDisplay(k) {
+  const charMap = {CC:'cc',CT:'ct',F:'f',E:'e',Ag:'ag',Int:'int',Per:'per',FM:'fm',Soc:'soc'};
+  const id = charMap[k];
+  const current = getCharTotal(id);
+  const el = document.getElementById('carac-cr-' + k);
+  if (el) {
+    el.textContent = current > 0 ? current : '—';
+    el.style.color = current > 0 ? 'var(--rust)' : 'var(--sublabel-color)';
+  }
+  // Stocker dans creation.caracs pour l'export JSON
+  if (current > 0) creation.caracs[k] = current;
 }
 
 function updateCaracDisplay(k) {
@@ -2917,160 +2928,217 @@ function validateStep3() {
   const c = creation.carriereDetail;
   if (!c) return;
 
-  // Collecter les compétences finales avec spécialités
-  const compFinales = [];
+  // ---- 1. Collecter toutes les compétences à reporter ----
+  const compFinales = []; // {nom, niveau:'base'|'forme', malus?}
 
-  // Monde natal innées
-  if (m?.competences_innees) m.competences_innees.forEach(comp => compFinales.push({nom:comp, niveau:'base'}));
+  // Monde natal innées → base
+  if (m?.competences_innees) {
+    m.competences_innees.forEach(n => compFinales.push({nom:n, niveau:'base'}));
+  }
 
-  // Monde natal malus compétence
-  if (m?.traits) m.traits.filter(t=>t.Trait_type==='malus_competence').forEach(t =>
-    compFinales.push({nom:t.Cible, niveau:'base', malus:parseInt(t.Valeur)||0})
-  );
+  // Monde natal malus compétence → base + malus dans bonus
+  if (m?.traits) {
+    m.traits.filter(t=>t.Trait_type==='malus_competence').forEach(t =>
+      compFinales.push({nom:t.Cible, niveau:'base', malus:parseInt(t.Valeur)||0})
+    );
+  }
 
-  // Carrière — récupérer les choix
-  const grid = document.getElementById('step3-choices-grid');
-  const choiceDivs = grid ? grid.children : [];
+  // Carrière → choix & spécialités
   let choiceIdx = 0;
-
   c.competences_depart.forEach(comp => {
     if (comp.includes(' OU ')) {
-      // Lire le radio sélectionné
       const radios = document.querySelectorAll(`input[name="choice-${choiceIdx}"]`);
-      const selected = Array.from(radios).find(r => r.checked);
-      if (selected) compFinales.push({nom: selected.value, niveau:'forme'});
+      const sel = Array.from(radios).find(r=>r.checked);
+      compFinales.push({nom: sel ? sel.value : comp.split(' OU ')[0].trim(), niveau:'forme'});
       choiceIdx++;
     } else if (needsSpec(comp)) {
-      // Lire le champ texte de spécialité
       const inp = document.getElementById('spec-' + choiceIdx);
-      const val = inp ? inp.value.trim() : comp;
-      compFinales.push({nom: val || comp, niveau:'forme'});
+      compFinales.push({nom: inp?.value.trim() || comp, niveau:'forme'});
       choiceIdx++;
     } else {
       compFinales.push({nom: comp, niveau:'forme'});
     }
   });
 
-  // Reporter dans skillRows
+  // Historique → compétences formées
+  if (creation.historique?.competences) {
+    creation.historique.competences.forEach(n => compFinales.push({nom:n, niveau:'forme'}));
+  }
+
+  // ---- 2. Reporter dans skillRows ----
+  // Helper : normalise un nom pour comparaison
+  const norm = str => str.toLowerCase()
+    .replace(/\s*\(.*?\)/g,'').replace(/[^a-zà-ÿ]/g,' ')
+    .replace(/\s+/g,' ').trim();
+
+  // Helper : cocher une skillRow
+  const cocherRow = (sd, i, niveau, malus) => {
+    if (!sd._cbs) return;
+    const keys = ['base','forme','p10','p20'];
+    // Décocher tout sauf si verrouillé
+    keys.forEach((k,ki) => { if(sd._cbs[ki] && !sd._cbs[ki].disabled){ sd._cbs[ki].checked=false; sd[k]=false; }});
+    const ki = {base:0,forme:1,p10:2,p20:3}[niveau]??1;
+    if (sd._cbs[ki] && !sd._cbs[ki].disabled) {
+      sd._cbs[ki].checked = true; sd[niveau] = true;
+    }
+    if (malus && sd._bonusEl) { sd.bonus=malus; sd._bonusEl.value=malus; }
+    updateSkillRow(i);
+  };
+
+  // Groupes multi-compétences (panneau droit)
+  const MULTI_MAP = {
+    'cg ':                  'connaissances générales',
+    'ci ':                  'connaissances interdites',
+    'cs ':                  'connaissances scholastiques',
+    'connaissances généra': 'connaissances générales',
+    'connaissances interdi':'connaissances interdites',
+    'connaissances scholas':'connaissances scholastiques',
+    'langue ':              'langue',
+    'langage secret':       'langage secret',
+    'codes secrets':        'codes secrets',
+    'métier':               'métier',
+    'pilotage':             'pilotage',
+    'expression artistique':'expression artistique',
+  };
+
   compFinales.forEach(cf => {
-    const nomCourt = cf.nom.toLowerCase().replace(/\s*\(.*\)/g,'').trim().substring(0,12);
+    const cfNorm = norm(cf.nom);
+    let matched = false;
+
+    // a) Chercher dans skillRows existants (compétences fixes)
     skillRows.forEach((sd, i) => {
+      if (matched) return;
       let nomLigne = '';
       if (sd._nameEl) {
-        nomLigne = (sd._nameEl.value || sd._nameEl.selectedOptions?.[0]?.text || '').toLowerCase();
-      } else if (sd._total) {
-        const row = sd._total.closest?.('.skill-row');
-        if (row) nomLigne = (row.querySelector('.skill-name-cell')?.textContent||'').toLowerCase();
+        nomLigne = norm(sd._nameEl.tagName==='SELECT'
+          ? (sd._nameEl.selectedOptions?.[0]?.text||'')
+          : (sd._nameEl.value||''));
+      } else {
+        const row = sd._total?.closest?.('.skill-row');
+        nomLigne = norm(row?.querySelector('.skill-name-cell')?.textContent||'');
       }
-      if (nomCourt.length > 3 && nomLigne.includes(nomCourt)) {
-        if (sd._cbs) sd._cbs.forEach((cb,ki) => { if(cb&&!cb.disabled){cb.checked=false; sd[['base','forme','p10','p20'][ki]]=false;}});
-        const ki = {base:0,forme:1,p10:2,p20:3}[cf.niveau]??1;
-        if (sd._cbs?.[ki] && !sd._cbs[ki].disabled) { sd._cbs[ki].checked=true; sd[cf.niveau]=true; }
-        else if (ki===0 && sd._cbs?.[0]?.disabled) { /* déjà base */ }
-        if (cf.malus && sd._bonusEl) { sd.bonus=cf.malus; sd._bonusEl.value=cf.malus; }
-        updateSkillRow(i);
-      }
-      // Si ligne manuelle vide, la remplir
-      if (sd._nameEl && sd._nameEl.tagName==='INPUT' && !sd._nameEl.value && nomCourt.length>3) {
-        // ne pas écraser une ligne déjà remplie
+      // Correspondance sur les 8 premiers caractères significatifs
+      const key = cfNorm.substring(0,8);
+      if (key.length > 3 && nomLigne.includes(key)) {
+        cocherRow(sd, i, cf.niveau, cf.malus);
+        matched = true;
       }
     });
 
-    // Pour les compétences avec spécialité (CG, CI, CS, Langue…) → remplir une ligne manuelle du bon groupe
-    const MULTI_PREFIXES = [
-      {prefix:'CG ',       label:'Connaissances générales'},
-      {prefix:'CI ',       label:'Connaissances interdites'},
-      {prefix:'CS ',       label:'Connaissances scholastiques'},
-      {prefix:'Connaissances générales', label:'Connaissances générales'},
-      {prefix:'Connaissances interdites', label:'Connaissances interdites'},
-      {prefix:'Connaissances scholastiques', label:'Connaissances scholastiques'},
-      {prefix:'Langue ',   label:'Langue'},
-      {prefix:'Langage secret', label:'Langage secret'},
-      {prefix:'Codes secrets', label:'Codes secrets'},
-      {prefix:'Métier',    label:'Métier'},
-      {prefix:'Pilotage',  label:'Pilotage'},
-      {prefix:'Expression artistique', label:'Expression artistique'},
-    ];
-    const matched = MULTI_PREFIXES.find(p => cf.nom.startsWith(p.prefix));
-    if (matched) {
-      // Trouver une ligne manuelle vide sous ce groupe dans le panneau droit
-      skillRows.forEach((sd, i) => {
-        if (sd._nameEl?.tagName==='INPUT' && !sd._nameEl.value) {
-          // Vérifier que c'est dans le bon bloc en cherchant le multi-skill-label parent
+    // b) Compétences avec spécialité → remplir ligne vide du bon groupe
+    if (!matched) {
+      const cfLower = cf.nom.toLowerCase();
+      let groupLabel = null;
+      for (const [prefix, label] of Object.entries(MULTI_MAP)) {
+        if (cfLower.startsWith(prefix)) { groupLabel = label; break; }
+      }
+
+      if (groupLabel) {
+        // Trouver le premier skillRow manuel vide appartenant au bon groupe
+        for (let i = 0; i < skillRows.length; i++) {
+          const sd = skillRows[i];
+          if (!sd._nameEl || sd._nameEl.tagName !== 'INPUT' || sd._nameEl.value) continue;
+          // Remonter dans le DOM pour trouver le label du groupe
           const row = sd._total?.closest?.('.skill-row');
-          if (row) {
-            let prev = row.previousElementSibling;
-            while (prev) {
-              if (prev.classList?.contains('multi-skill-label') && prev.textContent.includes(matched.label)) {
-                sd._nameEl.value = cf.nom;
-                if (sd._cbs?.[cf.niveau==='base'?0:1] && !sd._cbs[cf.niveau==='base'?0:1].disabled) {
-                  sd._cbs[cf.niveau==='base'?0:1].checked = true;
-                  sd[cf.niveau] = true;
-                  updateSkillRow(i);
-                }
-                break;
-              }
-              prev = prev.previousElementSibling;
+          if (!row) continue;
+          let prev = row.previousElementSibling;
+          let found = false;
+          while (prev) {
+            if (prev.classList?.contains('multi-skill-label') &&
+                norm(prev.textContent).includes(groupLabel.substring(0,12))) {
+              found = true; break;
             }
+            prev = prev.previousElementSibling;
+          }
+          if (found) {
+            sd._nameEl.value = cf.nom;
+            cocherRow(sd, i, cf.niveau, cf.malus);
+            break;
           }
         }
-      });
+      } else {
+        // Compétence simple non trouvée → remplir une ligne libre du panneau gauche
+        for (let i = 0; i < skillRows.length; i++) {
+          const sd = skillRows[i];
+          if (!sd._nameEl || sd._nameEl.tagName !== 'SELECT') continue;
+          if (sd._nameEl.value) continue;
+          // Chercher l'option correspondante
+          const opts = Array.from(sd._nameEl.options);
+          const opt = opts.find(o => norm(o.text).includes(cfNorm.substring(0,8)));
+          if (opt) {
+            sd._nameEl.value = opt.value;
+            sd._nameEl.dispatchEvent(new Event('change'));
+            cocherRow(sd, i, cf.niveau, cf.malus);
+            break;
+          }
+        }
+      }
     }
   });
 
-  // Talents de départ → zone talents
+  // ---- 3. Talents + Traits ----
   const allTalents = [];
   if (m?.traits) m.traits.filter(t=>t.Trait_type==='talent').forEach(t=>allTalents.push(t.Valeur));
   if (c.talents_depart) c.talents_depart.filter(t=>!t.includes('Formation aux armes')).forEach(t=>allTalents.push(t));
+  if (creation.historique?.talents) creation.historique.talents.forEach(t=>allTalents.push(t));
   const talentsBox = document.getElementById('talents-box');
-  if (talentsBox && allTalents.length) {
-    const inputs = talentsBox.querySelectorAll('input[type=text]');
-    allTalents.forEach((tal,i) => { if(inputs[i]) inputs[i].value=tal; });
-  }
+  if (talentsBox) { const inps=talentsBox.querySelectorAll('input[type=text]'); allTalents.forEach((t,i)=>{if(inps[i])inps[i].value=t;}); }
 
-  // Traits → zone traits
   const allTraits = [];
-  if (m?.traits) m.traits.filter(t=>t.Trait_type!=='talent'&&t.Trait_type!=='malus_carac'&&t.Trait_type!=='malus_competence').forEach(t=>allTraits.push(t.Trait_nom+' : '+t.Valeur));
+  if (m?.traits) m.traits.filter(t=>!['talent','malus_carac','malus_competence'].includes(t.Trait_type)).forEach(t=>allTraits.push(t.Trait_nom+' : '+t.Valeur));
   if (c.trait_depart) allTraits.push(c.trait_depart);
   const traitsBox = document.getElementById('traits-box');
-  if (traitsBox) { const inputs=traitsBox.querySelectorAll('input[type=text]'); allTraits.forEach((tr,i)=>{if(inputs[i])inputs[i].value=tr;}); }
+  if (traitsBox) { const inps=traitsBox.querySelectorAll('input[type=text]'); allTraits.forEach((t,i)=>{if(inps[i])inps[i].value=t;}); }
 
-  // Formations aux armes → mastery table
-  const FORMATION_MAP = {
-    'bolts':{table:'ranged',row:0},'fusion':{table:'ranged',row:1},'MS':{table:'ranged',row:2},
-    'plasma':{table:'ranged',row:3},'lance-flammes':{table:'ranged',row:4},'laser':{table:'ranged',row:5},
-    'primitives':{table:'ranged',row:6},'Astartes':{table:'ranged',row:7},
-    'décharge':{table:'melee',row:0},'énergétiques':{table:'melee',row:1},'tronçonneuses':{table:'melee',row:3},
+  // ---- 4. Formations aux armes ----
+  const FMAP = {
+    'bolts':{t:'ranged',r:0},'fusion':{t:'ranged',r:1},'ms':{t:'ranged',r:2},
+    'plasma':{t:'ranged',r:3},'lance-flammes':{t:'ranged',r:4},'laser':{t:'ranged',r:5},
+    'primitives':{t:'ranged',r:6},'astartes':{t:'ranged',r:7},
+    'décharge':{t:'melee',r:0},'énergétiques':{t:'melee',r:1},'tronçonneuses':{t:'melee',r:3},
   };
-  c.talents_depart.filter(t=>t.includes('Formation aux armes')).forEach(f=>{
-    Object.entries(FORMATION_MAP).forEach(([key,pos])=>{
-      if(f.toLowerCase().includes(key.toLowerCase())){
-        const tbl=document.getElementById('mastery-'+pos.table);
-        if(!tbl)return;
-        const rows=tbl.querySelectorAll('tbody tr');
-        if(!rows[pos.row])return;
-        const btns=rows[pos.row].querySelectorAll('button');
-        let col=1;
-        if(f.toLowerCase().includes('poing'))col=0;
-        else if(f.toLowerCase().includes('lourd'))col=2;
-        if(btns[col]){btns[col].dataset.active='1';btns[col].style.background='var(--rust)';btns[col].style.borderColor='var(--rust)';}
-      }
+  const allF = [
+    ...(c.talents_depart||[]),
+    ...(creation.historique?.talents||[]),
+    ...creation.achats.filter(a=>a.nom.includes('Formation')).map(a=>a.nom+' '+a.niveau),
+  ].filter(t=>t.includes('Formation aux armes'));
+
+  allF.forEach(f => {
+    const fl = f.toLowerCase();
+    Object.entries(FMAP).forEach(([key,pos]) => {
+      if (!fl.includes(key)) return;
+      const tbl = document.getElementById('mastery-'+pos.t);
+      if (!tbl) return;
+      const rows = tbl.querySelectorAll('tbody tr');
+      if (!rows[pos.r]) return;
+      const btns = rows[pos.r].querySelectorAll('button');
+      let col = 1;
+      if (fl.includes('poing')) col=0;
+      else if (fl.includes('lourd')) col=2;
+      if (btns[col]) { btns[col].dataset.active='1'; btns[col].style.background='var(--rust)'; btns[col].style.borderColor='var(--rust)'; }
     });
   });
 
-  // Équipement
+  // ---- 5. Équipement ----
   if (c.equipement_depart?.length) {
     const equipBox = document.getElementById('equip-box');
-    if (equipBox) { const inputs=equipBox.querySelectorAll('input[type=text]'); c.equipement_depart.forEach((item,i)=>{if(inputs[i])inputs[i].value=item;}); }
+    if (equipBox) { const inps=equipBox.querySelectorAll('input[type=text]'); c.equipement_depart.forEach((item,i)=>{if(inps[i])inps[i].value=item;}); }
   }
 
-  // Identité
+  // ---- 6. Identité ----
   if (m) { const el=document.getElementById('monde'); if(el) el.value=m.nom; }
-  const el=document.getElementById('carriere'); if(el) el.value=c.nom;
-  const pr=document.getElementById('promo');    if(pr) pr.value='1';
+  { const el=document.getElementById('carriere'); if(el) el.value=c.nom; }
+  { const el=document.getElementById('promo');    if(el) el.value='1'; }
+  if (creation.historique) { const el=document.getElementById('historique'); if(el) el.value=creation.historique.nom; }
+  if (creation.divination?.citation) { const el=document.getElementById('divination'); if(el) el.value='«\u00a0'+creation.divination.citation+'\u00a0»'; }
+
+  // ---- 7. XP ----
+  const xpDep = creation.achats.reduce((s,a)=>s+a.cout,0);
+  const xa=document.getElementById('xp-avail'); if(xa) xa.value=creation.xpTotal-xpDep;
+  const xs=document.getElementById('xp-spent'); if(xs) xs.value=xpDep;
 
   const ok=document.getElementById('step3-ok');
-  if(ok){ok.style.display='inline'; setTimeout(()=>ok.style.display='none',2500);}
+  if(ok){ok.style.display='inline'; setTimeout(()=>ok.style.display='none',3000);}
 }
 
 // ------------------------------------------------
